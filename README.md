@@ -7,7 +7,8 @@
 ---
 
 <p align="center">
-  <img src="src/images/지니포털.png" width="750">
+  <img src="https://github.com/user-attachments/assets/76bb9fc8-3c74-4bbc-966e-59c51f8bb779" />
+
   <br>
   <em>지니 포털 메인 화면 (공공기관 스타일)</em>
 </p>
