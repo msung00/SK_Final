@@ -7,7 +7,7 @@
 ---
 
 <p align="center">
-  <img src="C:\Users\User\Desktop\Genie\지니포털.png" width="750">
+  <img src="src/images/지니포털.png" width="750">
   <br>
   <em>지니 포털 메인 화면 (공공기관 스타일)</em>
 </p>
