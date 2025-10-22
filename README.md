@@ -81,14 +81,31 @@
 ```bash
 📦 genie-portal/
 ├── 📁 src/
-│   ├── 📁 images/           # 로고 및 페이지용 이미지
-│   ├── 📁 views/            # Home, Privacy, Terms, About 등 개별 페이지
-│   ├── 📁 components/       # 헤더/푸터 등 공통 컴포넌트
-│   ├── App.vue              # 루트 컴포넌트
-│   └── main.js              # 진입점
-├── 📁 public/
-│   └── logo.png             # 파비콘 또는 공개 로고 이미지
-├── 📜 vite.config.js
-├── 📜 tailwind.config.js
-├── 📜 package.json
-└── 📜 README.md
+│   ├── 📁 assets/
+│   │   └── tailwind.css
+│   ├── 📁 images/
+│   │   ├── 조직도.png
+│   │   ├── genie.png
+│   │   ├── lamp.png
+│   │   └── portal.png
+│   ├── 📁 router/
+│   │   └── index.js
+│   ├── 📁 views/
+│   │   ├── AboutView.vue
+│   │   ├── CivilView.vue
+│   │   ├── CopyrightView.vue
+│   │   ├── CSView.vue
+│   │   ├── HomeView.vue
+│   │   ├── MapView.vue
+│   │   ├── NewsView.vue
+│   │   ├── OpenInfoView.vue
+│   │   ├── PolicyView.vue
+│   │   ├── PrivacyView.vue
+│   │   ├── RecruitView.vue
+│   │   └── TermsView.vue
+│   ├── App.vue
+│   └── main.js
+├── index.html
+├── package.json
+└── vite.config.js
+
