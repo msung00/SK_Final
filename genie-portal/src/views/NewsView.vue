@@ -27,7 +27,7 @@
         <div class="bg-white border border-slate-200 rounded-xl overflow-hidden">
           <img src="C:\project\SK_Final\SK_Final\genie-portal\src\images\portal.png">
           <div class="p-4 space-y-2">
-            <a href="#" class="font-semibold hover:underline">지니 포털 개편, 접근성 강화</a>
+            <a href="#" class="font-semibold hover:underline">KOEA 포털 개편, 접근성 강화</a>
             <p class="text-sm text-slate-600">민원 편의성 향상과 정보 접근성 제고를 위한 디자인 개편 시행.</p>
             <time class="text-xs text-slate-500">2025-10-22</time>
           </div>

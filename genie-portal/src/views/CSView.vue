@@ -3,13 +3,13 @@
     <h1 class="text-3xl font-extrabold mb-6">고객센터</h1>
 
     <p class="text-slate-700 mb-4">
-      지니 포털 이용과 관련된 문의사항을 안내드립니다. 아래 연락처를 통해 언제든 문의해주세요.
+      KOEA 포털 이용과 관련된 문의사항을 안내드립니다. 아래 연락처를 통해 언제든 문의해주세요.
     </p>
 
     <div class="space-y-4 text-slate-700 mb-8">
       <p><strong>대표전화:</strong> 02-0000-0000</p>
       <p><strong>운영시간:</strong> 평일 09:00 ~ 18:00 (주말·공휴일 휴무)</p>
-      <p><strong>이메일:</strong> support@genie.go.kr</p>
+      <p><strong>이메일:</strong> support@KOEA.go.kr</p>
     </div>
 
     <hr class="my-8" />
