@@ -6,8 +6,8 @@
         <RouterLink to="/" class="flex items-center gap-2">
           <img src="/src/images/logo.png" alt="지니 로고" class="w-10 h-10 rounded-lg object-contain" />
           <div>
-            <p class="text-xl font-bold text-govblue">한국고용정보공단 포털</p>
-            <p class="text-xs text-slate-500">Korea Employment Agency Portal</p>
+            <p class="text-xl font-bold text-govblue">K-Job 인재 헌터스 포털</p>
+            <p class="text-xs text-slate-500">Korea Job Talent Hunters Portal</p>
           </div>
         </RouterLink>
         <nav>
@@ -33,8 +33,8 @@
     <footer class="bg-slate-900 text-slate-200 py-10">
       <div class="container flex justify-between">
         <div>
-          <p class="font-bold text-lg">한국고용정보공단 | 공공기관 포털</p>
-          <p class="text-sm text-slate-400 mt-1">© 2025 Korea Employment Agency Portal. All rights reserved.</p>
+          <p class="font-bold text-lg">K-Job 인재 헌터스 | 고용서비스 포털</p>
+          <p class="text-sm text-slate-400 mt-1">© 2025 Korea Job Talent Hunters Portal. All rights reserved.</p>
         </div>
         <ul class="text-sm text-slate-400 space-x-4">
           <li class="inline"><RouterLink to="/privacy" class="hover:underline">개인정보처리방침</RouterLink></li>

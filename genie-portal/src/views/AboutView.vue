@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1 class="text-3xl font-extrabold mb-3">기관소개</h1>
-    <p class="text-slate-600 mb-8">한국고용정보공단은 국민 중심의 공공서비스 제공을 목표로 합니다.</p>
+    <p class="text-slate-600 mb-8">K-Job 인재 헌터스는 국민 중심의 고용서비스 제공을 목표로 합니다.</p>
 
     <section class="mb-12">
       <h2 class="text-xl font-bold mb-3 border-l-4 border-govblue pl-3">비전·가치</h2>
@@ -16,7 +16,7 @@
         </div>
         <div class="bg-white border border-slate-200 rounded-xl p-6">
           <p class="font-semibold">슬로건</p>
-          <p class="text-sm text-slate-600 mt-1">국민과 함께하는 공공서비스</p>
+          <p class="text-sm text-slate-600 mt-1">국민과 함께하는 고용서비스</p>
         </div>
       </div>
     </section>

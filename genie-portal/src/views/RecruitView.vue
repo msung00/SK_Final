@@ -49,7 +49,7 @@ function viewJobs() {
 
       <div class="border border-slate-200 rounded-xl p-6 hover:shadow-lg transition group">
         <h2 class="text-xl font-bold text-govblue mb-3">채용정보 조회</h2>
-        <p class="text-slate-600 mb-4">공공기관 및 민간기업의 최신 채용정보를 확인할 수 있습니다.</p>
+        <p class="text-slate-600 mb-4">국내 중소기업의 최신 채용정보를 확인할 수 있습니다.</p>
         <button
           @click="viewJobs"
           class="bg-govblue text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"

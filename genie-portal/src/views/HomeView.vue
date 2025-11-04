@@ -5,8 +5,8 @@ import genieImg from '@/images/genie.png'
 <template>
   <section class="grid grid-cols-2 gap-10 items-center">
     <div>
-      <p class="text-sm font-semibold text-govblue mb-2">국민과 함께하는 공공서비스</p>
-      <h1 class="text-4xl font-extrabold mb-4">한국고용정보공단  포털</h1>
+      <p class="text-sm font-semibold text-govblue mb-2">국민과 함께하는 고용서비스</p>
+      <h1 class="text-4xl font-extrabold mb-4">K-Job 인재 헌터스  포털</h1>
       <p class="text-slate-600">
         민원 신청, 정책 확인, 정보공개, 기관소개 등 주요 서비스를 한 곳에서 이용하세요.
       </p>
