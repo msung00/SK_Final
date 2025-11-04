@@ -16,6 +16,8 @@ import RecruitView from '@/views/RecruitView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import MatchingView from '@/views/MatchingView.vue'
 import JobsView from '@/views/JobsView.vue'
+import LoginView from '@/views/LoginView.vue'
+import RegistersView from '@/views/RegistersView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -43,6 +45,8 @@ const router = createRouter({
 
 
     { path: '/:pathMatch(.*)*', redirect: '/' },
+    { path: '/login', name: 'login', component: LoginView },
+    { path: '/register', name: 'register', component: RegistersView },
   ],
 })
 
