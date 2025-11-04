@@ -1,16 +1,19 @@
 <script setup>
 const jobList = [
   { id: 1, title: '공공기관 보안 담당자', company: '국가정보보호원', location: '서울', date: '2025-11-10 ~ 2025-11-30' },
-  { id: 2, title: '데이터 엔지니어', company: '지니데이터센터', location: '부산', date: '2025-10-25 ~ 2025-11-15' },
+  { id: 2, title: '데이터 엔지니어', company: 'K-Job 데이터센터', location: '부산', date: '2025-10-25 ~ 2025-11-15' },
   { id: 3, title: 'AI 모델 연구원', company: '스마트AI랩', location: '대전', date: '2025-11-01 ~ 2025-11-25' },
-  { id: 4, title: '웹 프론트엔드 개발자', company: '공공정보서비스센터', location: '세종', date: '2025-11-05 ~ 2025-11-28' },
-  { id: 5, title: '시스템 운영 관리자', company: '국가정보통신진흥원', location: '서울', date: '2025-10-20 ~ 2025-11-20' },
-  { id: 6, title: '네트워크 엔지니어', company: '지니네트웍스', location: '인천', date: '2025-11-02 ~ 2025-11-30' },
-  { id: 7, title: '보안 취약점 분석가', company: '사이버보안센터', location: '서울', date: '2025-11-12 ~ 2025-11-29' },
-  { id: 8, title: '빅데이터 분석가', company: '공공데이터플랫폼', location: '부산', date: '2025-11-03 ~ 2025-11-26' },
-  { id: 9, title: 'AI 서비스 기획자', company: '지니테크', location: '광주', date: '2025-10-29 ~ 2025-11-25' },
-  { id: 10, title: '기술지원 엔지니어', company: '한국정보산업진흥협회', location: '대구', date: '2025-11-08 ~ 2025-11-30' },
 ]
+
+function apply(job) {
+  const applicant = JSON.parse(localStorage.getItem('kjob.applicant') || 'null')
+  if (!applicant) {
+    alert('먼저 구직자 등록을 완료해주세요.')
+    return
+  }
+
+  alert(`${applicant.name}님, "${job.title}" 공고에 지원이 완료되었습니다.`)
+}
 </script>
 
 <template>
@@ -40,8 +43,8 @@ const jobList = [
           <td class="p-3">{{ job.date }}</td>
           <td class="p-3 text-center">
             <button
+              @click="apply(job)"
               class="bg-govblue text-white px-4 py-1 rounded hover:bg-blue-700 text-sm"
-              @click="alert(`${job.company} - ${job.title} 지원 페이지로 이동합니다.`)"
             >
               지원하기
             </button>

@@ -25,7 +25,7 @@
       <aside>
         <h2 class="text-xl font-bold mb-3 border-l-4 border-govblue pl-3">보도자료</h2>
         <div class="bg-white border border-slate-200 rounded-xl overflow-hidden">
-          <img src="C:\project\SK_Final\SK_Final\genie-portal\src\images\portal.png">
+          <img src="C:\project\SK_Final\SK_Final\genie-portal\src\images\KJob.png">
           <div class="p-4 space-y-2">
             <a href="#" class="font-semibold hover:underline">K-Job 포털 개편, 접근성 강화</a>
             <p class="text-sm text-slate-600">민원 편의성 향상과 정보 접근성 제고를 위한 디자인 개편 시행.</p>
