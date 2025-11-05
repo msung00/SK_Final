@@ -7,12 +7,13 @@ const username = ref('')
 const role = ref('user')
 const activeTab = ref('info')
 
-// 구직자용 정보
+// 일반회원 데이터
 const personalInfo = ref({ name: '', birth: '', phone: '', email: '' })
 const resume = ref({ education: '', experience: '', skills: '', intro: '' })
 
-// 기업회원용 데이터
-const applicants = ref([])
+// 기업회원 데이터
+const jobPosts = ref([])
+const selectedJob = ref(null)
 
 onMounted(() => {
   const storedUser = localStorage.getItem('kjob.username')
@@ -27,7 +28,7 @@ onMounted(() => {
   username.value = storedUser
   role.value = storedRole
 
-  // 구직자 데이터 불러오기
+  // 일반회원 데이터 불러오기
   if (role.value === 'user') {
     const savedInfo = JSON.parse(localStorage.getItem(`kjob.info.${storedUser}`) || '{}')
     const savedResume = JSON.parse(localStorage.getItem(`kjob.resume.${storedUser}`) || '{}')
@@ -35,24 +36,30 @@ onMounted(() => {
     resume.value = { ...resume.value, ...savedResume }
   }
 
-  // 기업회원용 지원자 더미 데이터
+  // 기업회원 데이터 불러오기 (RecruitView에서 저장된 데이터)
   if (role.value === 'company') {
-    applicants.value = [
-      { name: '김현수', job: 'AI 연구원', status: '면접대기', date: '2025-11-01' },
-      { name: '이지은', job: '데이터 분석가', status: '서류통과', date: '2025-11-03' },
-      { name: '박준호', job: '보안 엔지니어', status: '1차합격', date: '2025-11-04' },
-      { name: '홍길동', job: '백엔드 개발자', status: '지원완료', date: '2025-11-02' },
-      { name: '최지우', job: '웹 프론트엔드', status: '최종합격', date: '2025-11-05' },
-      { name: '김태희', job: '시스템 관리자', status: '면접대기', date: '2025-11-06' },
-      { name: '오세훈', job: 'DB 엔지니어', status: '불합격', date: '2025-11-07' },
-      { name: '이유진', job: 'AI 옵스 엔지니어', status: '면접대기', date: '2025-11-08' },
-      { name: '강지원', job: 'QA 테스터', status: '서류통과', date: '2025-11-09' },
-      { name: '정유진', job: '클라우드 운영', status: '지원완료', date: '2025-11-10' },
-    ]
+    const storedJobs = JSON.parse(localStorage.getItem(`kjob.jobs.${storedUser}`) || '[]')
+
+    // 더미 지원자 자동 추가 (공고별로)
+    storedJobs.forEach((job) => {
+      if (!job.applicants) {
+        const dummyCount = Math.floor(Math.random() * 4) + 3 // 3~6명 랜덤
+        job.applicants = Array.from({ length: dummyCount }, (_, i) => ({
+          id: i + 1,
+          name: ['이준호', '박지현', '김현수', '정가영', '이수민', '최지연'][i % 6],
+          job: job.title,
+          status: ['지원완료', '서류통과', '면접예정', '1차합격', '최종합격'][i % 5],
+          date: `2025-11-${String(3 + i).padStart(2, '0')}`,
+        }))
+      }
+    })
+
+    jobPosts.value = storedJobs
+    saveAll()
   }
 })
 
-// 저장
+// 저장 함수
 function saveInfo() {
   localStorage.setItem(`kjob.info.${username.value}`, JSON.stringify(personalInfo.value))
   alert('개인정보가 저장되었습니다.')
@@ -60,106 +67,159 @@ function saveInfo() {
 
 function saveResume() {
   localStorage.setItem(`kjob.resume.${username.value}`, JSON.stringify(resume.value))
-  alert('이력서 정보가 저장되었습니다.')
+  alert('이력서가 저장되었습니다.')
+}
+
+function saveAll() {
+  localStorage.setItem(`kjob.jobs.${username.value}`, JSON.stringify(jobPosts.value))
+}
+
+// 상태 변경
+function changeStatus(applicant, newStatus) {
+  applicant.status = newStatus
+  saveAll()
+  alert(`${applicant.name}님의 상태가 "${newStatus}"로 변경되었습니다.`)
 }
 </script>
 
 <template>
-  <div class="max-w-5xl mx-auto bg-white p-8 rounded-xl shadow-md">
+  <div class="max-w-6xl mx-auto bg-white p-8 rounded-xl shadow-md">
     <h1 class="text-3xl font-bold text-govblue mb-8 text-center">
       {{ username }} 님의 마이페이지
-      <span class="text-slate-500 text-lg ml-2">({{ role === 'company' ? '기업회원' : '구직자' }})</span>
+      <span class="text-slate-500 text-lg ml-2">
+        ({{ role === 'company' ? '기업회원' : '구직자' }})
+      </span>
     </h1>
 
-    <!-- 일반 회원용 -->
+    <!-- 👤 일반회원 -->
     <div v-if="role === 'user'">
       <div class="flex justify-center mb-8 border-b border-slate-200">
         <button
           @click="activeTab = 'info'"
-          :class="[ 'px-6 py-2 text-sm font-semibold border-b-2',
-            activeTab === 'info' ? 'border-govblue text-govblue' : 'border-transparent text-slate-500 hover:text-slate-700']"
+          :class="['px-6 py-2 text-sm font-semibold border-b-2',
+            activeTab === 'info' ? 'border-govblue text-govblue' : 'text-slate-500 border-transparent hover:text-slate-700']"
         >
-          나의 개인정보
+          개인정보
         </button>
         <button
           @click="activeTab = 'resume'"
-          :class="[ 'px-6 py-2 text-sm font-semibold border-b-2',
-            activeTab === 'resume' ? 'border-govblue text-govblue' : 'border-transparent text-slate-500 hover:text-slate-700']"
+          :class="['px-6 py-2 text-sm font-semibold border-b-2',
+            activeTab === 'resume' ? 'border-govblue text-govblue' : 'text-slate-500 border-transparent hover:text-slate-700']"
         >
-          나의 이력서 관리
+          이력서 관리
         </button>
       </div>
 
-      <!-- 개인정보 -->
       <div v-if="activeTab === 'info'" class="space-y-5">
-        <div>
-          <label class="block text-sm font-semibold mb-1">이름</label>
-          <input v-model="personalInfo.name" type="text" class="border rounded-lg w-full p-2" placeholder="홍길동" />
-        </div>
+        <label class="block text-sm font-semibold mb-1">이름</label>
+        <input v-model="personalInfo.name" class="border rounded-lg w-full p-2" placeholder="홍길동" />
         <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-semibold mb-1">생년월일</label>
-            <input v-model="personalInfo.birth" type="date" class="border rounded-lg w-full p-2" />
-          </div>
-          <div>
-            <label class="block text-sm font-semibold mb-1">전화번호</label>
-            <input v-model="personalInfo.phone" type="text" class="border rounded-lg w-full p-2" placeholder="010-1234-5678" />
-          </div>
+          <input v-model="personalInfo.birth" type="date" class="border rounded-lg w-full p-2" />
+          <input v-model="personalInfo.phone" class="border rounded-lg w-full p-2" placeholder="010-1234-5678" />
         </div>
-        <div>
-          <label class="block text-sm font-semibold mb-1">이메일</label>
-          <input v-model="personalInfo.email" type="email" class="border rounded-lg w-full p-2" placeholder="example@email.com" />
-        </div>
-        <button @click="saveInfo" class="mt-6 bg-govblue text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
-          개인정보 저장
-        </button>
+        <input v-model="personalInfo.email" class="border rounded-lg w-full p-2" placeholder="example@email.com" />
+        <button @click="saveInfo" class="bg-govblue text-white px-6 py-2 rounded-lg mt-4 hover:bg-blue-700">저장</button>
       </div>
 
-      <!-- 이력서 -->
       <div v-else class="space-y-5">
-        <div>
-          <label class="block text-sm font-semibold mb-1">학력</label>
-          <textarea v-model="resume.education" class="border rounded-lg w-full p-2 h-20" placeholder="예: ○○대학교 졸업"></textarea>
-        </div>
-        <div>
-          <label class="block text-sm font-semibold mb-1">경력</label>
-          <textarea v-model="resume.experience" class="border rounded-lg w-full p-2 h-20" placeholder="예: ○○회사 근무 (2022~현재)"></textarea>
-        </div>
-        <div>
-          <label class="block text-sm font-semibold mb-1">보유 기술</label>
-          <textarea v-model="resume.skills" class="border rounded-lg w-full p-2 h-20" placeholder="예: Python, Vue.js, AI 보안"></textarea>
-        </div>
-        <div>
-          <label class="block text-sm font-semibold mb-1">자기소개서</label>
-          <textarea v-model="resume.intro" class="border rounded-lg w-full p-2 h-32" placeholder="자기소개를 입력하세요."></textarea>
-        </div>
-        <button @click="saveResume" class="mt-6 bg-govblue text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
-          이력서 저장
-        </button>
+        <textarea v-model="resume.education" class="border rounded-lg w-full p-2 h-20" placeholder="학력"></textarea>
+        <textarea v-model="resume.experience" class="border rounded-lg w-full p-2 h-20" placeholder="경력"></textarea>
+        <textarea v-model="resume.skills" class="border rounded-lg w-full p-2 h-20" placeholder="보유 기술"></textarea>
+        <textarea v-model="resume.intro" class="border rounded-lg w-full p-2 h-32" placeholder="자기소개"></textarea>
+        <button @click="saveResume" class="bg-govblue text-white px-6 py-2 rounded-lg mt-4 hover:bg-blue-700">이력서 저장</button>
       </div>
     </div>
 
-    <!-- 기업 회원용 -->
+    <!-- 🏢 기업회원 -->
     <div v-else>
-      <h2 class="text-2xl font-semibold mb-6">📋 지원자 관리</h2>
-      <table class="w-full text-left border-collapse">
-        <thead>
-          <tr class="bg-govblue text-white">
-            <th class="p-3 rounded-tl-lg">지원자명</th>
-            <th class="p-3">지원 직무</th>
-            <th class="p-3">상태</th>
-            <th class="p-3">지원일</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="a in applicants" :key="a.name" class="border-b hover:bg-slate-50 transition">
-            <td class="p-3 font-semibold">{{ a.name }}</td>
-            <td class="p-3">{{ a.job }}</td>
-            <td class="p-3">{{ a.status }}</td>
-            <td class="p-3">{{ a.date }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <h2 class="text-2xl font-semibold mb-6">📋 등록된 채용공고</h2>
+
+      <!-- 공고 목록 -->
+      <div v-if="!selectedJob">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-govblue text-white">
+              <th class="p-3">공고명</th>
+              <th class="p-3">등록일</th>
+              <th class="p-3">지원자 수</th>
+              <th class="p-3 text-center">보기</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="job in jobPosts"
+              :key="job.id"
+              class="border-b hover:bg-slate-50 transition"
+            >
+              <td class="p-3 font-semibold">{{ job.title }}</td>
+              <td class="p-3">{{ job.date }}</td>
+              <td class="p-3">{{ job.applicants.length }} 명</td>
+              <td class="p-3 text-center">
+                <button
+                  @click="selectedJob = job"
+                  class="bg-govblue text-white px-3 py-1 rounded hover:bg-blue-700"
+                >
+                  지원자 보기
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 지원자 상세 -->
+      <div v-else>
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-xl font-bold text-govblue">{{ selectedJob.title }} 지원자 목록</h2>
+          <button
+            @click="selectedJob = null"
+            class="text-sm border px-4 py-1.5 rounded hover:bg-slate-100"
+          >
+            ← 공고 목록으로
+          </button>
+        </div>
+
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-govblue text-white">
+              <th class="p-3">이름</th>
+              <th class="p-3">직무</th>
+              <th class="p-3">지원일</th>
+              <th class="p-3">상태</th>
+              <th class="p-3 text-center">저장</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="a in selectedJob.applicants"
+              :key="a.id"
+              class="border-b hover:bg-slate-50 transition"
+            >
+              <td class="p-3 font-semibold">{{ a.name }}</td>
+              <td class="p-3">{{ a.job }}</td>
+              <td class="p-3">{{ a.date }}</td>
+              <td class="p-3">
+                <select v-model="a.status" class="border rounded px-2 py-1 text-sm">
+                  <option>지원완료</option>
+                  <option>서류통과</option>
+                  <option>면접예정</option>
+                  <option>1차합격</option>
+                  <option>최종합격</option>
+                  <option>불합격</option>
+                </select>
+              </td>
+              <td class="p-3 text-center">
+                <button
+                  @click="changeStatus(a, a.status)"
+                  class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
+                >
+                  저장
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
