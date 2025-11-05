@@ -15,29 +15,32 @@
         <!-- 네비게이션 -->
         <nav>
           <ul class="flex gap-6 text-sm font-semibold items-center">
-            <li><RouterLink to="/civil" class="hover:text-govblue" active-class="text-govblue">민원안내</RouterLink></li>
-            <li><RouterLink to="/openinfo" class="hover:text-govblue" active-class="text-govblue">정보공개</RouterLink></li>
-            <li><RouterLink to="/policy" class="hover:text-govblue" active-class="text-govblue">정책·사업</RouterLink></li>
+            <li><RouterLink to="/civil" class="hover:text-govblue" active-class="text-govblue">서비스 안내</RouterLink></li>
+            <li><RouterLink to="/openinfo" class="hover:text-govblue" active-class="text-govblue">채용 공지</RouterLink></li>
+            <li><RouterLink to="/policy" class="hover:text-govblue" active-class="text-govblue">복지 정책</RouterLink></li>
             <li><RouterLink to="/news" class="hover:text-govblue" active-class="text-govblue">알림·소식</RouterLink></li>
-            <li><RouterLink to="/about" class="hover:text-govblue" active-class="text-govblue">기관소개</RouterLink></li>
+            <li><RouterLink to="/about" class="hover:text-govblue" active-class="text-govblue">회사 소개</RouterLink></li>
             <li><RouterLink to="/recruit" class="hover:text-govblue" active-class="text-govblue">참여·채용</RouterLink></li>
             <li><RouterLink to="/cs" class="hover:text-govblue" active-class="text-govblue">고객센터</RouterLink></li>
           </ul>
         </nav>
 
-        <!-- 로그인 / 회원 / 사용자 상태 -->
+        <!-- 로그인 / 회원 상태 -->
         <div class="flex items-center gap-3 ml-6">
           <!-- 로그인 상태 -->
           <template v-if="username">
             <p class="text-sm font-semibold text-govblue">
-              {{ username }}님 안녕하세요!
+              {{ username }}님 
+              <span class="text-xs text-slate-500 ml-1">({{ role === 'company' ? '기업회원' : '구직자' }})</span>
             </p>
+
             <RouterLink
               to="/mypage"
               class="text-sm border border-slate-300 px-3 py-1 rounded hover:bg-slate-100"
             >
               마이페이지
             </RouterLink>
+
             <button
               @click="logout"
               class="bg-govblue text-white px-3 py-1 rounded hover:bg-blue-700 text-sm"
@@ -65,7 +68,7 @@
       </div>
     </header>
 
-    <!-- Page -->
+    <!-- 페이지 영역 -->
     <main class="container py-10 flex-1">
       <RouterView />
     </main>
@@ -75,7 +78,9 @@
       <div class="container flex justify-between flex-wrap gap-6">
         <div>
           <p class="font-bold text-lg">K-Job 인재 헌터스 | 고용서비스 포털</p>
-          <p class="text-sm text-slate-400 mt-1">© 2025 Korea Job Talent Hunters Portal. All rights reserved.</p>
+          <p class="text-sm text-slate-400 mt-1">
+            © 2025 Korea Job Talent Hunters Portal. All rights reserved.
+          </p>
         </div>
         <ul class="text-sm text-slate-400 space-x-4">
           <li class="inline"><RouterLink to="/privacy" class="hover:underline">개인정보처리방침</RouterLink></li>
@@ -93,25 +98,26 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const username = ref(localStorage.getItem('kjob.username') || null)
+const role = ref(localStorage.getItem('kjob.role') || 'user')
 const router = useRouter()
 
-// 로그인 후 즉시 반영
 window.addEventListener('storage', (e) => {
-  if (e.key === 'kjob.username') {
-    username.value = e.newValue
-  }
+  if (e.key === 'kjob.username') username.value = e.newValue
+  if (e.key === 'kjob.role') role.value = e.newValue
 })
 
-// 새로고침 시 username 유지
 onMounted(() => {
-  const stored = localStorage.getItem('kjob.username')
-  if (stored) username.value = stored
+  const storedUser = localStorage.getItem('kjob.username')
+  const storedRole = localStorage.getItem('kjob.role')
+  if (storedUser) username.value = storedUser
+  if (storedRole) role.value = storedRole
 })
 
-// 로그아웃 기능
 function logout() {
   localStorage.removeItem('kjob.username')
+  localStorage.removeItem('kjob.role')
   username.value = null
+  role.value = 'user'
   router.push('/')
 }
 </script>

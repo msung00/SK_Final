@@ -1,39 +1,65 @@
 <script setup>
+import { ref, onMounted } from 'vue'
 import genieImg from '@/images/KJob.png'
+
+const role = ref('user') // 기본 구직자
+
+onMounted(() => {
+  // 로그인된 회원 정보에서 role 가져오기
+  const storedRole = localStorage.getItem('kjob.role') || 'user'
+  role.value = storedRole
+})
 </script>
 
 <template>
+  <!-- 메인 Hero 영역 -->
   <section class="grid grid-cols-2 gap-10 items-center">
     <div>
       <p class="text-sm font-semibold text-govblue mb-2">국민과 함께하는 고용서비스</p>
-      <h1 class="text-4xl font-extrabold mb-4">K-Job 인재 헌터스  포털</h1>
+      <h1 class="text-4xl font-extrabold mb-4">K-Job 인재 헌터스 포털</h1>
       <p class="text-slate-600">
-        민원 신청, 정책 확인, 정보공개, 기관소개 등 주요 서비스를 한 곳에서 이용하세요.
+        서비스, 정책 확인, 정보공개, 기관소개 등 주요 서비스를 한 곳에서 이용하세요.
       </p>
+
+      <!-- 버튼 영역 -->
       <div class="mt-6 flex gap-3">
+        <!-- ✅ 회원 역할에 따라 버튼 문구 변경 -->
         <RouterLink
+          v-if="role === 'company'"
           to="/recruit"
-          class="bg-govblue text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium"
+          class="bg-govblue text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium transition"
+        >
+          채용 관리 바로가기
+        </RouterLink>
+
+        <RouterLink
+          v-else
+          to="/recruit"
+          class="bg-govblue text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium transition"
         >
           채용 지원 바로가기
         </RouterLink>
+
         <RouterLink
           to="/openinfo"
-          class="border border-slate-300 px-6 py-3 rounded-lg hover:bg-slate-50 font-medium"
+          class="border border-slate-300 px-6 py-3 rounded-lg hover:bg-slate-50 font-medium transition"
         >
           정보공개 안내
         </RouterLink>
       </div>
     </div>
 
+    <!-- 이미지 영역 -->
     <div>
       <img
         :src="genieImg"
         alt="공공서비스 이미지"
-        class="rounded-xl shadow object-cover w-full max-h-[450px]" />
+        class="rounded-xl shadow object-cover w-full max-h-[450px]"
+      />
     </div>
   </section>
 
+  <!-- 자주 찾는 서비스 -->
   <section class="mt-14">
     <h2 class="text-2xl font-bold mb-6 border-l-4 border-govblue pl-3">자주 찾는 서비스</h2>
 
@@ -43,8 +69,10 @@ import genieImg from '@/images/KJob.png'
         class="group bg-white border border-slate-200 rounded-xl p-6 hover:shadow-lg transition"
       >
         <div class="flex items-center justify-between">
-          <p class="font-semibold">민원 안내</p>
-          <div class="bg-govsky/10 text-govblue p-2 rounded-lg group-hover:bg-govblue group-hover:text-white transition">
+          <p class="font-semibold">서비스 안내</p>
+          <div
+            class="bg-govsky/10 text-govblue p-2 rounded-lg group-hover:bg-govblue group-hover:text-white transition"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="h-5 w-5"
@@ -56,7 +84,7 @@ import genieImg from '@/images/KJob.png'
             </svg>
           </div>
         </div>
-        <p class="text-sm text-slate-600 mt-2">민원 통합신청 및 제증명 발급</p>
+        <p class="text-sm text-slate-600 mt-2">서비스 안내</p>
       </RouterLink>
 
       <RouterLink
