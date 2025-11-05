@@ -21,8 +21,14 @@ const newJobTitle = ref('')
 const newJobLocation = ref('')
 const newJobPeriod = ref('')
 
+// 공고 수정 모드 상태
+const editJobId = ref(null)
+const editTitle = ref('')
+const editLocation = ref('')
+const editPeriod = ref('')
+
 /* ─────────────────────────────────────────
-  구직자 탭(기존 구조 최소 유지)
+  구직자 탭 (기존 유지)
 ────────────────────────────────────────── */
 const activeTab = ref('resume')
 const applicant = ref(JSON.parse(localStorage.getItem('kjob.applicant') || 'null'))
@@ -68,7 +74,7 @@ function apply(jobRow) {
 }
 
 /* ─────────────────────────────────────────
-  더미 지원자 생성 (중복 제거 + 줄바꿈 처리 대응)
+  더미 지원자 (중복 방지)
 ────────────────────────────────────────── */
 function dummyApplicantsFor(title) {
   const pool = [
@@ -128,35 +134,29 @@ function dummyApplicantsFor(title) {
       status: '최종합격',
     },
   ]
-
   const count = Math.min(pool.length, Math.floor(Math.random() * 3) + 3)
   const applicants = []
-
   for (let i = 0; i < count; i++) {
     const idx = Math.floor(Math.random() * pool.length)
     const chosen = pool.splice(idx, 1)[0]
     applicants.push({ ...chosen, job: title })
   }
-
   return applicants
 }
 
 /* ─────────────────────────────────────────
-  공고 데이터 저장/불러오기
+  로컬스토리지 관리
 ────────────────────────────────────────── */
 function storageKey() {
   return `kjob.jobs.${username.value}`
 }
-
+function saveJobs() {
+  localStorage.setItem(storageKey(), JSON.stringify(companyJobs.value))
+}
 function loadJobs() {
   const saved = JSON.parse(localStorage.getItem(storageKey()) || '[]')
   companyJobs.value = saved
 }
-
-function saveJobs() {
-  localStorage.setItem(storageKey(), JSON.stringify(companyJobs.value))
-}
-
 function seedIfEmpty() {
   const saved = JSON.parse(localStorage.getItem(storageKey()) || '[]')
   if (saved.length) {
@@ -190,7 +190,7 @@ function seedIfEmpty() {
 }
 
 /* ─────────────────────────────────────────
-  공고 등록 / 전환 / 모달
+  공고 CRUD
 ────────────────────────────────────────── */
 function addJob() {
   if (!newJobTitle.value || !newJobLocation.value || !newJobPeriod.value) {
@@ -204,33 +204,62 @@ function addJob() {
     period: newJobPeriod.value,
     applicants: dummyApplicantsFor(newJobTitle.value),
   }
-  companyJobs.value = [...companyJobs.value, newJob]
+  companyJobs.value.push(newJob)
   saveJobs()
   newJobTitle.value = newJobLocation.value = newJobPeriod.value = ''
   alert('채용공고가 등록되었습니다.')
 }
 
+// 수정모드 진입
+function editJob(job) {
+  editJobId.value = job.id
+  editTitle.value = job.title
+  editLocation.value = job.location
+  editPeriod.value = job.period
+}
+
+// 수정 저장
+function saveEdit(job) {
+  job.title = editTitle.value
+  job.location = editLocation.value
+  job.period = editPeriod.value
+  editJobId.value = null
+  saveJobs()
+  alert('공고가 수정되었습니다.')
+}
+
+// 삭제
+function deleteJob(job) {
+  if (!confirm(`"${job.title}" 공고를 삭제하시겠습니까?`)) return
+  companyJobs.value = companyJobs.value.filter(j => j.id !== job.id)
+  saveJobs()
+  alert('공고가 삭제되었습니다.')
+}
+
+/* ─────────────────────────────────────────
+  상세보기 관련
+────────────────────────────────────────── */
 async function openJobDetail(job) {
   selectedJob.value = job
   showDetail.value = true
   await nextTick()
 }
-
 function closeDetail() {
   selectedJob.value = null
   showDetail.value = false
 }
-
 function openApplicantDetail(a) {
   selectedApplicant.value = a
   showApplicantModal.value = true
 }
-
 function closeApplicantDetail() {
   selectedApplicant.value = null
   showApplicantModal.value = false
 }
 
+/* ─────────────────────────────────────────
+  Mounted
+────────────────────────────────────────── */
 onMounted(() => {
   if (!localStorage.getItem('kjob.role')) {
     localStorage.setItem('kjob.role', 'company')
@@ -240,10 +269,7 @@ onMounted(() => {
     localStorage.setItem('kjob.username', 'demo_company')
     username.value = 'demo_company'
   }
-
-  if (role.value === 'company') {
-    seedIfEmpty()
-  }
+  if (role.value === 'company') seedIfEmpty()
 })
 </script>
 
@@ -251,24 +277,24 @@ onMounted(() => {
   <div class="bg-white rounded-xl shadow p-8 max-w-6xl mx-auto">
     <h1 class="text-3xl font-bold text-govblue mb-8">참여·채용</h1>
 
-    <!-- 🏢 기업회원 화면 -->
+    <!-- 🏢 기업회원 -->
     <div v-if="role === 'company'">
       <h2 class="text-2xl font-bold mb-4 text-blue-700">기업 채용관리 대시보드</h2>
 
-      <!-- 공고 등록 -->
+      <!-- ✅ 공고 등록 -->
       <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
         <h3 class="text-lg font-semibold mb-4">새 채용공고 등록</h3>
         <div class="grid grid-cols-3 gap-4 mb-4">
-          <input v-model="newJobTitle" placeholder="공고명 (예: 백엔드 개발자)" class="border rounded p-2" />
-          <input v-model="newJobLocation" placeholder="근무지 (예: 서울)" class="border rounded p-2" />
-          <input v-model="newJobPeriod" placeholder="채용기간 (예: 11-01 ~ 11-30)" class="border rounded p-2" />
+          <input v-model="newJobTitle" placeholder="공고명" class="border rounded p-2" />
+          <input v-model="newJobLocation" placeholder="근무지" class="border rounded p-2" />
+          <input v-model="newJobPeriod" placeholder="채용기간" class="border rounded p-2" />
         </div>
         <button @click="addJob" class="bg-blue-700 text-white px-6 py-2 rounded hover:bg-blue-800">
           공고 등록
         </button>
       </div>
 
-      <!-- 공고 목록 -->
+      <!-- ✅ 공고 목록 -->
       <div v-if="!showDetail">
         <table class="w-full text-left border-collapse">
           <thead>
@@ -277,39 +303,48 @@ onMounted(() => {
               <th class="p-3">근무지</th>
               <th class="p-3">채용기간</th>
               <th class="p-3 text-center">지원자 수</th>
+              <th class="p-3 text-center">관리</th>
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="job in companyJobs"
-              :key="job.id"
-              class="border-b hover:bg-slate-50 cursor-pointer transition"
-            >
-              <td class="p-3 font-semibold">{{ job.title }}</td>
-              <td class="p-3">{{ job.location }}</td>
-              <td class="p-3">{{ job.period }}</td>
-              <td class="p-3 text-center">
-                <button
-                  class="text-blue-700 underline hover:text-blue-900"
-                  @click="openJobDetail(job)"
-                >
-                  {{ job.applicants.length }}
-                </button>
-              </td>
+            <tr v-for="job in companyJobs" :key="job.id" class="border-b hover:bg-slate-50">
+              <!-- 수정모드 -->
+              <template v-if="editJobId === job.id">
+                <td class="p-2"><input v-model="editTitle" class="border rounded p-1 w-full" /></td>
+                <td class="p-2"><input v-model="editLocation" class="border rounded p-1 w-full" /></td>
+                <td class="p-2"><input v-model="editPeriod" class="border rounded p-1 w-full" /></td>
+                <td class="p-2 text-center text-blue-700">{{ job.applicants.length }}</td>
+                <td class="p-2 text-center">
+                  <button @click="saveEdit(job)" class="bg-green-600 text-white px-2 py-1 rounded text-sm">저장</button>
+                </td>
+              </template>
+
+              <!-- 기본보기 -->
+              <template v-else>
+                <td class="p-3 font-semibold">{{ job.title }}</td>
+                <td class="p-3">{{ job.location }}</td>
+                <td class="p-3">{{ job.period }}</td>
+                <td class="p-3 text-center">
+                  <button class="text-blue-700 underline" @click="openJobDetail(job)">
+                    {{ job.applicants.length }}
+                  </button>
+                </td>
+                <td class="p-3 text-center space-x-2">
+                  <button @click="editJob(job)" class="text-sm text-blue-600 underline">수정</button>
+                  <button @click="deleteJob(job)" class="text-sm text-red-600 underline">삭제</button>
+                </td>
+              </template>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <!-- 지원자 목록 -->
+      <!-- ✅ 지원자 목록 -->
       <div v-else>
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-xl font-bold text-govblue">{{ selectedJob.title }} 지원자 목록</h2>
-          <button
-            @click="closeDetail"
-            class="text-sm border px-4 py-1.5 rounded hover:bg-slate-100"
-          >
-            ← 공고 목록으로 돌아가기
+          <button @click="closeDetail" class="text-sm border px-4 py-1.5 rounded hover:bg-slate-100">
+            ← 공고 목록으로
           </button>
         </div>
 
@@ -349,7 +384,7 @@ onMounted(() => {
           </tbody>
         </table>
 
-        <!-- 상세 이력서 모달 -->
+        <!-- ✅ 상세 이력서 모달 -->
         <div
           v-if="showApplicantModal && selectedApplicant"
           class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
@@ -377,7 +412,7 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- 👤 구직자 화면 (기존 유지) -->
+    <!-- 👤 구직자 -->
     <div v-else>
       <div class="text-slate-500 text-center py-6">구직자 화면은 기존 구조 그대로 유지됩니다.</div>
     </div>
