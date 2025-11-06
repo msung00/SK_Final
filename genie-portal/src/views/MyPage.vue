@@ -7,14 +7,25 @@ const username = ref('')
 const role = ref('user')
 const activeTab = ref('info')
 
-// 일반회원 데이터
+// ✅ 기업 정보 객체 (담당자 수정 및 기업명 표시용)
+const companyInfo = ref({
+  companyName: 'K-Job 인재 헌터스',
+  businessNumber: '123-45-67890',
+  manager: '홍길동',
+  phone: '010-1234-5678'
+})
+
+// ✅ 일반회원 데이터
 const personalInfo = ref({ name: '', birth: '', phone: '', email: '' })
 const resume = ref({ education: '', experience: '', skills: '', intro: '' })
 
-// 기업회원 데이터
+// ✅ 기업회원 데이터
 const jobPosts = ref([])
 const selectedJob = ref(null)
 
+/* ────────────────────────────────
+   로그인 후 데이터 로드
+──────────────────────────────── */
 onMounted(() => {
   const storedUser = localStorage.getItem('kjob.username')
   const storedRole = localStorage.getItem('kjob.role') || 'user'
@@ -28,7 +39,7 @@ onMounted(() => {
   username.value = storedUser
   role.value = storedRole
 
-  // 일반회원 데이터 불러오기
+  // ✅ 구직자 데이터 불러오기
   if (role.value === 'user') {
     const savedInfo = JSON.parse(localStorage.getItem(`kjob.info.${storedUser}`) || '{}')
     const savedResume = JSON.parse(localStorage.getItem(`kjob.resume.${storedUser}`) || '{}')
@@ -36,30 +47,47 @@ onMounted(() => {
     resume.value = { ...resume.value, ...savedResume }
   }
 
-  // 기업회원 데이터 불러오기 (RecruitView에서 저장된 데이터)
+  // ✅ 기업회원 데이터 불러오기
   if (role.value === 'company') {
     const storedJobs = JSON.parse(localStorage.getItem(`kjob.jobs.${storedUser}`) || '[]')
 
-    // 더미 지원자 자동 추가 (공고별로)
+    // 지원자 더미 자동 추가
     storedJobs.forEach((job) => {
       if (!job.applicants) {
-        const dummyCount = Math.floor(Math.random() * 4) + 3 // 3~6명 랜덤
+        const dummyCount = Math.floor(Math.random() * 4) + 3 // 3~6명
         job.applicants = Array.from({ length: dummyCount }, (_, i) => ({
           id: i + 1,
           name: ['이준호', '박지현', '김현수', '정가영', '이수민', '최지연'][i % 6],
           job: job.title,
           status: ['지원완료', '서류통과', '면접예정', '1차합격', '최종합격'][i % 5],
-          date: `2025-11-${String(3 + i).padStart(2, '0')}`,
+          date: `2025-11-${String(3 + i).padStart(2, '0')}`
         }))
       }
     })
-
     jobPosts.value = storedJobs
     saveAll()
+
+    // ✅ 기업명 랜덤 변경
+    const randomCompanies = [
+      '네오테크솔루션',
+      '하이비전소프트',
+      '퓨처데이터랩',
+      '브레인파워시스템즈',
+      '씨앤에이아이',
+      '디지털브릿지',
+      '넥스트인포테크',
+      '이노컴퍼니',
+      '에이치알링크',
+      '탑스마일시스템'
+    ]
+    const randomName = randomCompanies[Math.floor(Math.random() * randomCompanies.length)]
+    companyInfo.value.companyName = randomName
   }
 })
 
-// 저장 함수
+/* ────────────────────────────────
+   저장 함수들
+──────────────────────────────── */
 function saveInfo() {
   localStorage.setItem(`kjob.info.${username.value}`, JSON.stringify(personalInfo.value))
   alert('개인정보가 저장되었습니다.')
@@ -74,11 +102,29 @@ function saveAll() {
   localStorage.setItem(`kjob.jobs.${username.value}`, JSON.stringify(jobPosts.value))
 }
 
-// 상태 변경
 function changeStatus(applicant, newStatus) {
   applicant.status = newStatus
   saveAll()
   alert(`${applicant.name}님의 상태가 "${newStatus}"로 변경되었습니다.`)
+}
+
+/* ────────────────────────────────
+   담당자 수정 & 회원탈퇴
+──────────────────────────────── */
+function saveCompanyInfo() {
+  alert('담당자 정보가 수정되었습니다.')
+}
+
+function withdrawAccount() {
+  if (confirm('정말 회원 탈퇴하시겠습니까? 탈퇴 시 모든 데이터가 삭제됩니다.')) {
+    localStorage.removeItem(`kjob.username`)
+    localStorage.removeItem(`kjob.role`)
+    localStorage.removeItem(`kjob.info.${username.value}`)
+    localStorage.removeItem(`kjob.resume.${username.value}`)
+    localStorage.removeItem(`kjob.jobs.${username.value}`)
+    alert('회원 탈퇴가 완료되었습니다.')
+    router.push('/')
+  }
 }
 </script>
 
@@ -91,7 +137,7 @@ function changeStatus(applicant, newStatus) {
       </span>
     </h1>
 
-    <!-- 👤 일반회원 -->
+    <!-- 👤 구직자 -->
     <div v-if="role === 'user'">
       <div class="flex justify-center mb-8 border-b border-slate-200">
         <button
@@ -128,13 +174,50 @@ function changeStatus(applicant, newStatus) {
         <textarea v-model="resume.intro" class="border rounded-lg w-full p-2 h-32" placeholder="자기소개"></textarea>
         <button @click="saveResume" class="bg-govblue text-white px-6 py-2 rounded-lg mt-4 hover:bg-blue-700">이력서 저장</button>
       </div>
+
+      <!-- 회원 탈퇴 버튼 -->
+      <div class="text-right mt-10">
+        <button
+          @click="withdrawAccount"
+          class="text-red-600 text-sm underline hover:text-red-800"
+        >
+          회원 탈퇴
+        </button>
+      </div>
     </div>
 
     <!-- 🏢 기업회원 -->
     <div v-else>
-      <h2 class="text-2xl font-semibold mb-6">📋 등록된 채용공고</h2>
+      <h2 class="text-2xl font-semibold mb-6">🏢 기업 정보</h2>
+      <div class="space-y-4 mb-10">
+        <div>
+          <label class="block text-sm font-semibold mb-1">기업명</label>
+          <input v-model="companyInfo.companyName" class="border rounded-lg w-full p-2 bg-gray-100" disabled />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1">사업자등록번호</label>
+          <input v-model="companyInfo.businessNumber" class="border rounded-lg w-full p-2 bg-gray-100" disabled />
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold mb-1">담당자 이름</label>
+            <input v-model="companyInfo.manager" class="border rounded-lg w-full p-2" />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold mb-1">담당자 전화번호</label>
+            <input v-model="companyInfo.phone" class="border rounded-lg w-full p-2" />
+          </div>
+        </div>
+        <button
+          @click="saveCompanyInfo"
+          class="bg-govblue text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+        >
+          담당자 정보 저장
+        </button>
+      </div>
 
-      <!-- 공고 목록 -->
+      <!-- 채용공고 목록 -->
+      <h2 class="text-2xl font-semibold mb-6">📋 등록된 채용공고</h2>
       <div v-if="!selectedJob">
         <table class="w-full text-left border-collapse">
           <thead>
@@ -167,7 +250,7 @@ function changeStatus(applicant, newStatus) {
         </table>
       </div>
 
-      <!-- 지원자 상세 -->
+      <!-- 지원자 목록 -->
       <div v-else>
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-xl font-bold text-govblue">{{ selectedJob.title }} 지원자 목록</h2>
@@ -219,6 +302,16 @@ function changeStatus(applicant, newStatus) {
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- 회원 탈퇴 버튼 -->
+      <div class="text-right mt-10">
+        <button
+          @click="withdrawAccount"
+          class="text-red-600 text-sm underline hover:text-red-800"
+        >
+          회원 탈퇴
+        </button>
       </div>
     </div>
   </div>
