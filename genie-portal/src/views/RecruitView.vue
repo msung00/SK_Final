@@ -29,17 +29,12 @@ const editPeriod = ref('')
   구직자 상태
 ────────────────────────────────────────── */
 const activeTab = ref('jobs') // jobs | match
-
-// 'AI' 키워드를 추가하여 매칭 공고를 2개로 늘림
 const applicant = ref(JSON.parse('{"name": "이준호 (샘플)", "email": "junho@kjob.com", "job": "보안, AI"}'))
-
-// 새로고침 시 지원 상태 초기화를 위해 로컬스토리지 대신 빈 배열로 시작
 const appliedJobs = ref([])
-
 const allJobs = ref([])
 
 /* ─────────────────────────────────────────
-  더미 지원자
+  더미 지원자 (3명 -> 6명으로 확장)
 ────────────────────────────────────────── */
 function dummyApplicantsFor(title) {
   const pool = [
@@ -76,8 +71,45 @@ function dummyApplicantsFor(title) {
       date: '2025-11-07',
       status: '면접 예정',
     },
+    // --- (신규 추가) ---
+    {
+      name: '박지훈',
+      email: 'jihun@kjob.com',
+      phone: '010-1111-2222',
+      education: 'Y대학교 소프트웨어학과 (재학)',
+      experience: '웹 개발 동아리 팀장 (2024~2025)\nReact 기반 교내 커뮤니티 사이트 구축',
+      skills: 'React, Vue, JavaScript, TailwindCSS',
+      intro: '새로운 기술을 배우는 것을 좋아하는 프론트엔드 개발자 지망생입니다.',
+      date: '2025-11-08',
+      status: '지원완료',
+    },
+    {
+      name: '최수민',
+      email: 'sumin@kjob.com',
+      phone: '010-7777-8888',
+      education: 'D대학교 컴퓨터공학과 (졸업)',
+      experience: 'SI 업체 백엔드 개발 (2022~2025)\n공공기관 유지보수 및 신규 기능 개발',
+      skills: 'Java, Spring Boot, JPA, MySQL',
+      intro: '안정적인 서비스 운영 경험이 있는 백엔드 개발자입니다.',
+      date: '2025-11-09',
+      status: '서류심사 중',
+    },
+    {
+      name: '윤서아',
+      email: 'seoah@kjob.com',
+      phone: '010-9876-5432',
+      education: 'E대학교 통계학과 (졸업)',
+      experience: '이커머스 기업 인턴 (6개월)\n구매 데이터 분석 및 리포트 작성',
+      skills: 'SQL, Python, Pandas, Tableau',
+      intro: '데이터에서 인사이트를 찾는 데이터 분석가입니다.',
+      date: '2025-11-10',
+      status: '면접 예정',
+    }
   ]
-  return pool.map(p => ({ ...p, job: title }))
+  // 6명 중 랜덤으로 3~5명을 뽑아서 반환
+  const shuffled = pool.sort(() => 0.5 - Math.random())
+  const count = Math.floor(Math.random() * 3) + 3 // 3~5명
+  return shuffled.slice(0, count).map(p => ({ ...p, job: title }))
 }
 
 /* ─────────────────────────────────────────
@@ -95,6 +127,8 @@ function seedIfEmpty() {
     companyJobs.value = saved
     return
   }
+  
+  // --- (기존 3개 -> 5개로 확장) ---
   companyJobs.value = [
     {
       id: 1001,
@@ -112,11 +146,26 @@ function seedIfEmpty() {
     },
     {
       id: 1003,
-      title: '보안 담당자',
+      title: '정보 보안 담당자',
       location: '서울',
       period: '2025-11-02 ~ 11-29',
       applicants: dummyApplicantsFor('보안 담당자'),
     },
+    // --- (신규 추가) ---
+    {
+      id: 1004,
+      title: 'React 프론트엔드 개발자',
+      location: '판교',
+      period: '2025-11-05 ~ 12-05',
+      applicants: dummyApplicantsFor('React 프론트엔드 개발자'),
+    },
+    {
+      id: 1005,
+      title: 'Spring 백엔드 개발자 (3년+)',
+      location: '서울 (강남)',
+      period: '2025-11-10 ~ 12-10',
+      applicants: dummyApplicantsFor('Spring 백엔드 개발자'),
+    }
   ]
   saveJobs()
 }
@@ -217,6 +266,7 @@ function calculateSuitability(applicant, job) {
     if (jobTitle.includes('ai')) score = 85
     else if (jobTitle.includes('데이터')) score = 90
     else if (jobTitle.includes('보안')) score = 30
+    else if (jobTitle.includes('백엔드')) score = 70
   } 
   else if (applicant.name === '이준호') { // 스킬: Network, IDS/IPS, Kali Linux, BurpSuite
     if (jobTitle.includes('보안')) score = 95
@@ -227,6 +277,17 @@ function calculateSuitability(applicant, job) {
     if (jobTitle.includes('ai')) score = 90
     else if (jobTitle.includes('데이터')) score = 75
     else if (jobTitle.includes('보안')) score = 25
+  }
+  else if (applicant.name === '박지훈') { // 스킬: React, Vue, JavaScript, TailwindCSS
+    if (jobTitle.includes('프론트')) score = 95
+    else if (jobTitle.includes('react')) score = 95
+  }
+  else if (applicant.name === '최수민') { // 스킬: Java, Spring Boot, JPA, MySQL
+    if (jobTitle.includes('백엔드')) score = 90
+    else if (jobTitle.includes('spring')) score = 95
+  }
+  else if (applicant.name === '윤서아') { // 스킬: SQL, Python, Pandas, Tableau
+    if (jobTitle.includes('데이터')) score = 92
   }
   
   return Math.min(score, 100) // 100점 만점
@@ -251,7 +312,7 @@ const matchedJobs = computed(() => {
     let score = 0
     
     // 2. 키워드 매칭 점수 계산 (키워드 당 50점)
-    if (userKeywords.includes('ai') && title.includes('ai')) {
+    if (userKeywords.includes('ai') && (title.includes('ai') || title.includes('엔지니어'))) {
       score += 50
     }
     if (userKeywords.includes('보안') && title.includes('보안')) {
@@ -259,6 +320,12 @@ const matchedJobs = computed(() => {
     }
     if (userKeywords.includes('데이터') && title.includes('데이터')) {
       score += 50
+    }
+    if (userKeywords.includes('프론트') && title.includes('프론트')) {
+      score += 40
+    }
+    if (userKeywords.includes('백엔드') && title.includes('백엔드')) {
+      score += 40
     }
     // (필요시 '웹', '백엔드' 등 다른 키워드 규칙 추가)
 
@@ -283,7 +350,7 @@ onMounted(() => {
     seedIfEmpty()
   }
   
-  // 'user' (구직자) 역할일 때, 항상 더미 공고 3개를 allJobs에 할당
+  // 'user' (구직자) 역할일 때, 항상 더미 공고 5개를 allJobs에 할당
   if (role.value === 'user') {
     allJobs.value = [
       {
@@ -300,10 +367,23 @@ onMounted(() => {
       },
       {
         id: 1003,
-        title: '보안 담당자',
+        title: '정보 보안 담당자',
         location: '서울',
         period: '2025-11-02 ~ 11-29',
       },
+      // --- (신규 추가) ---
+      {
+        id: 1004,
+        title: 'React 프론트엔드 개발자',
+        location: '판교',
+        period: '2025-11-05 ~ 12-05',
+      },
+      {
+        id: 1005,
+        title: 'Spring 백엔드 개발자 (3년+)',
+        location: '서울 (강남)',
+        period: '2025-11-10 ~ 12-10',
+      }
     ]
   }
 })
@@ -319,11 +399,28 @@ onMounted(() => {
       <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
         <h3 class="text-lg font-semibold mb-4">새 채용공고 등록</h3>
         <div class="grid grid-cols-3 gap-4 mb-4">
-          <input v-model="newJobTitle" placeholder="공고명" class="border rounded p-2" />
-          <input v-model="newJobLocation" placeholder="근무지" class="border rounded p-2" />
-          <input v-model="newJobPeriod" placeholder="채용기간" class="border rounded p-2" />
+          <input
+            v-model="newJobTitle"
+            placeholder="공고명"
+            class="border rounded p-2"
+          />
+          <input
+            v-model="newJobLocation"
+            placeholder="근무지"
+            class="border rounded p-2"
+          />
+          <input
+            v-model="newJobPeriod"
+            placeholder="채용기간"
+            class="border rounded p-2"
+          />
         </div>
-        <button @click="addJob" class="bg-blue-700 text-white px-6 py-2 rounded hover:bg-blue-800">공고 등록</button>
+        <button
+          @click="addJob"
+          class="bg-blue-700 text-white px-6 py-2 rounded hover:bg-blue-800"
+        >
+          공고 등록
+        </button>
       </div>
 
       <div v-if="!showDetail">
@@ -338,14 +435,31 @@ onMounted(() => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="job in companyJobs" :key="job.id" class="border-b hover:bg-slate-50">
+            <tr
+              v-for="job in companyJobs"
+              :key="job.id"
+              class="border-b hover:bg-slate-50"
+            >
               <template v-if="editJobId === job.id">
-                <td class="p-2"><input v-model="editTitle" class="border rounded p-1 w-full" /></td>
-                <td class="p-2"><input v-model="editLocation" class="border rounded p-1 w-full" /></td>
-                <td class="p-2"><input v-model="editPeriod" class="border rounded p-1 w-full" /></td>
-                <td class="p-2 text-center text-blue-700">{{ job.applicants.length }}</td>
+                <td class="p-2">
+                  <input v-model="editTitle" class="border rounded p-1 w-full" />
+                </td>
+                <td class="p-2">
+                  <input v-model="editLocation" class="border rounded p-1 w-full" />
+                </td>
+                <td class="p-2">
+                  <input v-model="editPeriod" class="border rounded p-1 w-full" />
+                </td>
+                <td class="p-2 text-center text-blue-700">
+                  {{ job.applicants.length }}
+                </td>
                 <td class="p-2 text-center">
-                  <button @click="saveEdit(job)" class="bg-green-600 text-white px-2 py-1 rounded text-sm">저장</button>
+                  <button
+                    @click="saveEdit(job)"
+                    class="bg-green-600 text-white px-2 py-1 rounded text-sm"
+                  >
+                    저장
+                  </button>
                 </td>
               </template>
               <template v-else>
@@ -353,11 +467,23 @@ onMounted(() => {
                 <td class="p-3">{{ job.location }}</td>
                 <td class="p-3">{{ job.period }}</td>
                 <td class="p-3 text-center">
-                  <button class="text-blue-700 underline" @click="openJobDetail(job)">{{ job.applicants.length }}</button>
+                  <button class="text-blue-700 underline" @click="openJobDetail(job)">
+                    {{ job.applicants.length }}
+                  </button>
                 </td>
                 <td class="p-3 text-center space-x-2">
-                  <button @click="editJob(job)" class="text-sm text-blue-600 underline">수정</button>
-                  <button @click="deleteJob(job)" class="text-sm text-red-600 underline">삭제</button>
+                  <button
+                    @click="editJob(job)"
+                    class="text-sm text-blue-600 underline"
+                  >
+                    수정
+                  </button>
+                  <button
+                    @click="deleteJob(job)"
+                    class="text-sm text-red-600 underline"
+                  >
+                    삭제
+                  </button>
                 </td>
               </template>
             </tr>
@@ -368,23 +494,37 @@ onMounted(() => {
       <div v-else>
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-xl font-bold text-govblue">{{ selectedJob.title }} 지원자 목록</h2>
-          <button @click="closeDetail" class="text-sm border px-4 py-1.5 rounded hover:bg-slate-100">← 공고 목록으로</button>
+          <button
+            @click="closeDetail"
+            class="text-sm border px-4 py-1.5 rounded hover:bg-slate-100"
+          >
+            ← 공고 목록으로
+          </button>
         </div>
         <table class="w-full text-left border-collapse">
           <thead>
             <tr class="bg-govblue text-white">
-              <th class="p-3">이름</th> <th class="p-3">이메일</th>
+              <th class="p-3">이름</th>
+              <th class="p-3">이메일</th>
               <th class="p-3">전화번호</th>
               <th class="p-3">학력</th>
               <th class="p-3">경력 요약</th>
               <th class="p-3">보유 기술</th>
-              <th class="p-3 text-center">적합도</th> </tr>
+              <th class="p-3 text-center">적합도</th>
+            </tr>
           </thead>
           <tbody>
-            <tr v-for="a in selectedJob.applicants" :key="a.email" class="border-b hover:bg-slate-50">
+            <tr
+              v-for="a in selectedJob.applicants"
+              :key="a.email"
+              class="border-b hover:bg-slate-50"
+            >
               <td class="p-3">
                 <div class="font-semibold">{{ a.name }}</div>
-                <button @click.stop="openApplicantDetail(a)" class="text-sm text-blue-600 underline hover:text-blue-800">
+                <button
+                  @click.stop="openApplicantDetail(a)"
+                  class="text-sm text-blue-600 underline hover:text-blue-800"
+                >
                   이력서 보기
                 </button>
               </td>
@@ -400,16 +540,30 @@ onMounted(() => {
           </tbody>
         </table>
 
-        <div v-if="showApplicantModal && selectedApplicant" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div
+          v-if="showApplicantModal && selectedApplicant"
+          class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+        >
           <div class="bg-white rounded-xl shadow-lg p-6 w-[520px] relative">
-            <button @click="closeApplicantDetail" class="absolute top-3 right-3 text-slate-400 hover:text-slate-600">✕</button>
-            <h3 class="text-2xl font-bold text-govblue mb-4">{{ selectedApplicant.name }} 님의 이력서</h3>
+            <button
+              @click="closeApplicantDetail"
+              class="absolute top-3 right-3 text-slate-400 hover:text-slate-600"
+            >
+              ✕
+            </button>
+            <h3 class="text-2xl font-bold text-govblue mb-4">
+              {{ selectedApplicant.name }} 님의 이력서
+            </h3>
             <p><strong>이메일:</strong> {{ selectedApplicant.email }}</p>
             <p><strong>전화번호:</strong> {{ selectedApplicant.phone }}</p>
             <p><strong>학력:</strong> {{ selectedApplicant.education }}</p>
-            <p class="whitespace-pre-line"><strong>경력:</strong> {{ selectedApplicant.experience }}</p>
+            <p class="whitespace-pre-line">
+              <strong>경력:</strong> {{ selectedApplicant.experience }}
+            </p>
             <p><strong>보유 기술:</strong> {{ selectedApplicant.skills }}</p>
-            <p class="mt-3 text-slate-700 whitespace-pre-line"><strong>자기소개:</strong> {{ selectedApplicant.intro }}</p>
+            <p class="mt-3 text-slate-700 whitespace-pre-line">
+              <strong>자기소개:</strong> {{ selectedApplicant.intro }}
+            </p>
           </div>
         </div>
       </div>
@@ -417,17 +571,35 @@ onMounted(() => {
 
     <div v-else>
       <div class="flex gap-6 border-b border-slate-200 mb-8 justify-center">
-        <button @click="activeTab = 'jobs'" :class="['pb-2 font-semibold', activeTab === 'jobs' ? 'text-govblue border-b-2 border-govblue' : 'text-slate-500']">
+        <button
+          @click="activeTab = 'jobs'"
+          :class="[
+            'pb-2 font-semibold',
+            activeTab === 'jobs'
+              ? 'text-govblue border-b-2 border-govblue'
+              : 'text-slate-500',
+          ]"
+        >
           💼 전체 공고
         </button>
-        <button @click="activeTab = 'match'" :class="['pb-2 font-semibold', activeTab === 'match' ? 'text-govblue border-b-2 border-govblue' : 'text-slate-500']">
+        <button
+          @click="activeTab = 'match'"
+          :class="[
+            'pb-2 font-semibold',
+            activeTab === 'match'
+              ? 'text-govblue border-b-2 border-govblue'
+              : 'text-slate-500',
+          ]"
+        >
           🎯 매칭 추천
         </button>
       </div>
 
       <div v-if="activeTab === 'jobs'">
         <h2 class="text-2xl font-bold text-govblue mb-6">전체 채용공고</h2>
-        <div v-if="!allJobs.length" class="text-center text-slate-500 py-8">등록된 공고가 없습니다.</div>
+        <div v-if="!allJobs.length" class="text-center text-slate-500 py-8">
+          등록된 공고가 없습니다.
+        </div>
         <table v-else class="w-full text-left border-collapse">
           <thead>
             <tr class="bg-govblue text-white">
@@ -438,7 +610,11 @@ onMounted(() => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="j in allJobs" :key="j.id" class="border-b hover:bg-slate-50 transition">
+            <tr
+              v-for="j in allJobs"
+              :key="j.id"
+              class="border-b hover:bg-slate-50 transition"
+            >
               <td class="p-3 font-semibold">{{ j.title }}</td>
               <td class="p-3">{{ j.location }}</td>
               <td class="p-3">{{ j.period }}</td>
@@ -459,9 +635,13 @@ onMounted(() => {
 
       <div v-else>
         <h2 class="text-2xl font-bold text-govblue mb-6">🎯 맞춤 공고 추천</h2>
-        <div v-if="!applicant" class="text-center text-slate-500 py-8">📝 먼저 이력서를 등록해주세요.</div>
-        <div v-else-if="!matchedJobs.length" class="text-center text-slate-500 py-8">현재 조건에 맞는 공고가 없습니다.</div>
-        
+        <div v-if="!applicant" class="text-center text-slate-500 py-8">
+          📝 먼저 이력서를 등록해주세요.
+        </div>
+        <div v-else-if="!matchedJobs.length" class="text-center text-slate-500 py-8">
+          현재 조건에 맞는 공고가 없습니다.
+        </div>
+
         <table v-else class="w-full text-left border-collapse">
           <thead>
             <tr class="bg-blue-600 text-white">
@@ -473,7 +653,11 @@ onMounted(() => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="match in matchedJobs" :key="match.job.id" class="border-b hover:bg-slate-50 transition">
+            <tr
+              v-for="match in matchedJobs"
+              :key="match.job.id"
+              class="border-b hover:bg-slate-50 transition"
+            >
               <td class="p-3 font-semibold">{{ match.job.title }}</td>
               <td class="p-3">{{ match.job.location }}</td>
               <td class="p-3">{{ match.job.period }}</td>

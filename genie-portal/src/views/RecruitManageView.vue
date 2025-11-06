@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 
-// 지원자 더미데이터 (기업 전용)
+// 지원자 더미데이터 (9명 -> 15명으로 확장)
 const applicants = ref([
   { id: 1, name: '이준호', job: 'AI 개발자', company: 'K-Job 데이터랩', date: '2025-11-03', status: '서류심사 중', email: 'junho@kjob.or.kr' },
   { id: 2, name: '김지민', job: '정보보안 담당자', company: 'K-Job 보안센터', date: '2025-11-04', status: '면접 예정', email: 'jimin@kjob.or.kr' },
@@ -12,6 +12,13 @@ const applicants = ref([
   { id: 7, name: '이서윤', job: 'AI 데이터 분석가', company: 'K-Job 데이터랩', date: '2025-11-09', status: '면접 예정', email: 'seoyoon@kjob.or.kr' },
   { id: 8, name: '한지호', job: '보안 정책 담당', company: 'K-Job 보안센터', date: '2025-11-10', status: '합격', email: 'jiho@kjob.or.kr' },
   { id: 9, name: '김유진', job: 'AI 연구원', company: 'K-Job AI팀', date: '2025-11-10', status: '불합격', email: 'yujin@kjob.or.kr' },
+  // --- (신규 추가) ---
+  { id: 10, name: '문채원', job: '웹 프론트엔드 개발자', company: 'K-Job 플랫폼본부', date: '2025-11-11', status: '서류심사 중', email: 'chaewon@kjob.or.kr' },
+  { id: 11, name: '강민혁', job: '데이터 엔지니어', company: 'K-Job AI팀', date: '2025-11-11', status: '면접 예정', email: 'minhyuk@kjob.or.kr' },
+  { id: 12, name: '송하윤', job: 'AI 개발자', company: 'K-Job 데이터랩', date: '2025-11-12', status: '서류심사 중', email: 'hayoon@kjob.or.kr' },
+  { id: 13, name: '임도현', job: '정보보안 담당자', company: 'K-Job 보안센터', date: '2025-11-12', status: '불합격', email: 'dohyun@kjob.or.kr' },
+  { id: 14, name: '조은우', job: '백엔드 개발자', company: 'K-Job 클라우드팀', date: '2025-11-13', status: '합격', email: 'eunwoo@kjob.or.kr' },
+  { id: 15, name: '신예은', job: 'AI 연구원', company: 'K-Job AI팀', date: '2025-11-13', status: '서류심사 중', email: 'yeeun@kjob.or.kr' },
 ])
 
 const selectedApplicant = ref(null)
@@ -45,9 +52,10 @@ const interview = computed(() => applicants.value.filter(a => a.status === '면�
 <template>
   <div class="bg-white rounded-xl shadow p-8 max-w-7xl mx-auto">
     <h1 class="text-3xl font-bold text-govblue mb-6">📊 채용 관리 대시보드</h1>
-    <p class="text-slate-600 mb-10">기업 회원 전용 – 지원자 현황을 한눈에 확인하고 채용 단계를 관리할 수 있습니다.</p>
+    <p class="text-slate-600 mb-10">
+      기업 회원 전용 – 지원자 현황을 한눈에 확인하고 채용 단계를 관리할 수 있습니다.
+    </p>
 
-    <!-- ✅ 요약 카드 -->
     <div class="grid grid-cols-4 gap-6 mb-10">
       <div class="bg-blue-50 border-l-4 border-blue-500 p-5 rounded-lg">
         <p class="text-sm text-slate-600">전체 지원자</p>
@@ -67,7 +75,6 @@ const interview = computed(() => applicants.value.filter(a => a.status === '면�
       </div>
     </div>
 
-    <!-- ✅ 상태 필터 -->
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-xl font-semibold text-slate-800">지원자 목록</h2>
       <div class="flex gap-3">
@@ -81,7 +88,6 @@ const interview = computed(() => applicants.value.filter(a => a.status === '면�
       </div>
     </div>
 
-    <!-- ✅ 지원자 테이블 -->
     <table class="w-full text-left border-collapse">
       <thead>
         <tr class="bg-govblue text-white">
@@ -126,7 +132,6 @@ const interview = computed(() => applicants.value.filter(a => a.status === '면�
       </tbody>
     </table>
 
-    <!-- ✅ 이력서 상세 보기 -->
     <div v-if="selectedApplicant" class="mt-10 border-t pt-6 animate-fadeIn">
       <h2 class="text-xl font-bold mb-4">📄 {{ selectedApplicant.name }} 님의 이력서</h2>
       <p class="mb-2"><strong>직무:</strong> {{ selectedApplicant.job }}</p>
@@ -134,7 +139,10 @@ const interview = computed(() => applicants.value.filter(a => a.status === '면�
       <p class="mb-2"><strong>지원일:</strong> {{ selectedApplicant.date }}</p>
       <p class="mb-2"><strong>현재 상태:</strong> {{ selectedApplicant.status }}</p>
       <div class="mt-4 text-right">
-        <button @click="selectedApplicant = null" class="bg-slate-300 px-4 py-2 rounded hover:bg-slate-400">
+        <button
+          @click="selectedApplicant = null"
+          class="bg-slate-300 px-4 py-2 rounded hover:bg-slate-400"
+        >
           닫기
         </button>
       </div>
@@ -147,7 +155,13 @@ const interview = computed(() => applicants.value.filter(a => a.status === '면�
   animation: fadeIn 0.3s ease-in-out;
 }
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

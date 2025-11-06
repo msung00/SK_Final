@@ -1,8 +1,12 @@
 <script setup>
+// 3개 -> 5개로 확장
 const results = [
   { company: '지니전자', title: '프론트엔드 개발자', location: '서울특별시 중구', match: 92 },
   { company: '공공데이터센터', title: '데이터 분석 연구원', location: '세종특별자치시', match: 87 },
   { company: 'AI보안연구소', title: 'AI 엔지니어', location: '대전광역시 유성구', match: 84 },
+  // --- (신규 추가) ---
+  { company: '스마트모빌리티', title: '자율주행 SW 개발', location: '경기도 성남시', match: 81 },
+  { company: 'K-Job 클라우드팀', title: '클라우드 아키텍트', location: '부산광역시', match: 79 },
 ]
 </script>
 
@@ -20,7 +24,11 @@ const results = [
         <h2 class="text-xl font-bold text-govblue mb-1">{{ job.title }}</h2>
         <p class="text-slate-600">{{ job.company }} · {{ job.location }}</p>
         <p class="text-slate-700 mt-2 font-semibold">적합도: {{ job.match }}%</p>
-        <button class="mt-4 bg-govblue text-white px-4 py-2 rounded-lg hover:bg-blue-700">지원하기</button>
+        <button
+          class="mt-4 bg-govblue text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
+          지원하기
+        </button>
       </div>
     </div>
   </div>

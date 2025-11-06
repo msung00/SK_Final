@@ -1,8 +1,13 @@
 <script setup>
+// 3개 -> 6개로 확장
 const jobList = [
   { id: 1, title: '공공기관 보안 담당자', company: '국가정보보호원', location: '서울', date: '2025-11-10 ~ 2025-11-30' },
   { id: 2, title: '데이터 엔지니어', company: 'K-Job 데이터센터', location: '부산', date: '2025-10-25 ~ 2025-11-15' },
   { id: 3, title: 'AI 모델 연구원', company: '스마트AI랩', location: '대전', date: '2025-11-01 ~ 2025-11-25' },
+  // --- (신규 추가) ---
+  { id: 4, title: 'Vue.js 프론트엔드 개발자', company: '지니전자', location: '서울', date: '2025-11-05 ~ 2025-12-01' },
+  { id: 5, title: '클라우드 운영(SRE)', company: '하이비전소프트', location: '판교', date: '2025-11-08 ~ 2025-11-28' },
+  { id: 6, title: 'Java/Spring 백엔드 개발', company: '디지털브릿지', location: '부산', date: '2025-11-10 ~ 2025-12-10' },
 ]
 
 function apply(job) {

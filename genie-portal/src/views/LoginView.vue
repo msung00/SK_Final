@@ -23,13 +23,12 @@ function login() {
     localStorage.setItem('kjob.role', user.role || 'user') // 👈 role 저장
     eventBus.setUsername(id.value)
 
-    // --- ⬇️ (수정된 로직) ⬇️ ---
-    // ✅ 관리자(admin) 로그인 분기 처리
+    // 관리자(admin) 로그인 분기 처리
     if (user.role === 'admin') {
       alert(`${id.value}님, 관리자 모드로 로그인되었습니다.`)
       router.push('/admin') // 관리자 페이지로 이동
     }
-    // ✅ 로그인 후 기업/일반회원 구분 이동
+    // 로그인 후 기업/일반회원 구분 이동
     else if (user.role === 'company') {
       alert(`${id.value}님, 로그인되었습니다.`)
       router.push('/recruit') // 기업회원 → 채용관리 페이지
@@ -37,7 +36,6 @@ function login() {
       alert(`${id.value}님, 로그인되었습니다.`)
       router.push('/recruit') // 일반회원 → 참여·채용 페이지
     }
-    // --- ⬆️ (수정된 로직) ⬆️ ---
 
   } else {
     error.value = '아이디 또는 비밀번호가 올바르지 않습니다.'

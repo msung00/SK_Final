@@ -8,8 +8,6 @@ const selectedJob = ref(null)
 const matchedApplicants = ref([])
 const activeTab = ref('jobs') // 'jobs' | 'users'
 
-// --- ⬇️ (수정된 영역: 더미데이터) ⬇️ ---
-
 // 2. 확장된 구직자 더미데이터 (7명)
 const dummyApplicants = [
   {
@@ -28,7 +26,7 @@ const dummyApplicants = [
     resume: {
       education: 'K대학교 컴퓨터공학과 (졸업)',
       experience: 'AI 스타트업 인턴 (2024.03~2025.02)\n데이터 파이프라인 구축 및 모델 검증',
-      skills: 'Python, Flask, PostgreSQL, AWS, Docker, Data',
+      skills: 'Python, Flask, PostgreSQL, AWS, Docker, Data, Backend, SQL',
       intro: '성실하고 꼼꼼한 백엔드 개발자입니다. 팀워크와 문제 해결을 중시합니다.'
     }
   },
@@ -38,7 +36,7 @@ const dummyApplicants = [
     resume: {
       education: 'H대학교 AI학부 (졸업)',
       experience: 'AI 연구조교 (2024~2025)\n의료영상 세그멘테이션 모델 연구',
-      skills: 'PyTorch, Pandas, MLflow, AI, Python',
+      skills: 'PyTorch, Pandas, MLflow, AI, Python, Data',
       intro: 'AI 연구와 데이터 분석에 열정이 많습니다.'
     }
   },
@@ -58,7 +56,7 @@ const dummyApplicants = [
     resume: {
       education: 'D대학교 컴퓨터공학과 (졸업)',
       experience: 'SI 업체 백엔드 개발 (2022~2025)\n공공기관 유지보수 및 신규 기능 개발',
-      skills: 'Java, Spring Boot, JPA, MySQL, Backend',
+      skills: 'Java, Spring Boot, JPA, MySQL, Backend, SQL',
       intro: '안정적인 서비스 운영 경험이 있는 백엔드 개발자입니다.'
     }
   },
@@ -139,33 +137,71 @@ const dummyJobs = [
 
 // 4. 컴포넌트 마운트 시 더미데이터 할당
 onMounted(() => {
-  // localStorage 로드 로직 대신 더미데이터를 직접 할당
   allApplicants.value = dummyApplicants
   allJobs.value = dummyJobs
 })
 
-// --- ⬆️ (수정된 영역) ⬆️ ---
-
+// --- ⬇️ (수정된 핵심 로직) ⬇️ ---
 /**
- * 5. 관리자용 매칭 로직 (더미데이터 스킬 기반으로 수정)
+ * 5. 관리자용 매칭 로직 (점수 세분화)
  */
 function calculateAdminMatch(applicant, job) {
   if (!applicant || !job || !applicant.resume) return 0
   
   const title = job.title.toLowerCase()
   const skills = (applicant.resume.skills || '').toLowerCase()
-  let score = 0
+  let score = 0 // 기본 점수 0에서 시작
 
-  // 키워드 기반 점수 부여 (예시 로직)
-  if (title.includes('ai') && (skills.includes('ai') || skills.includes('python') || skills.includes('pytorch') || skills.includes('tensorflow'))) score += 50
-  if (title.includes('데이터') && (skills.includes('data') || skills.includes('sql') || skills.includes('pandas') || skills.includes('데이터'))) score += 50
-  if (title.includes('보안') && (skills.includes('security') || skills.includes('보안') || skills.includes('burpsuite') || skills.includes('ids'))) score += 50
-  if (title.includes('웹') && (skills.includes('js') || skills.includes('react') || skills.includes('vue') || skills.includes('web'))) score += 40
-  if (title.includes('백엔드') && (skills.includes('java') || skills.includes('spring') || skills.includes('node') || skills.includes('backend'))) score += 40
-  if (title.includes('cv') && (skills.includes('cv') || skills.includes('tensorflow'))) score += 60 // CV는 가중치
+  // --- AI / 데이터 (AI 엔지니어, 데이터 분석가, CV 연구원) ---
+  if (title.includes('ai') || title.includes('데이터') || title.includes('cv')) {
+    if (skills.includes('ai')) score += 25
+    if (skills.includes('python')) score += 20
+    if (skills.includes('data') || skills.includes('데이터')) score += 15
+    if (skills.includes('pandas')) score += 10
+    if (skills.includes('sql')) score += 5 // 데이터 직무에 SQL은 약간의 가점
+    if (skills.includes('pytorch') || skills.includes('tensorflow')) score += 25 // 핵심 기술
+    if (title.includes('cv') && skills.includes('cv')) score += 30 // CV 공고에 CV 스킬 (높은 가중치)
+  }
+  
+  // --- 보안 (Security) ---
+  if (title.includes('보안') || title.includes('security')) {
+    if (skills.includes('보안') || skills.includes('security')) score += 40 // 직접 키워드
+    if (skills.includes('network')) score += 15
+    if (skills.includes('ids') || skills.includes('ips')) score += 20
+    if (skills.includes('burpsuite') || skills.includes('kali')) score += 20 // 실무 툴
+  }
 
-  return Math.min(score, 100) // 100점 만점
+  // --- 웹 프론트엔드 (Web Frontend) ---
+  if (title.includes('프론트') || title.includes('web') || title.includes('react')) {
+    if (skills.includes('js') || skills.includes('javascript')) score += 20
+    if (skills.includes('react')) score += 30 // React 공고에 React
+    if (skills.includes('vue')) score += 25 // Vue도 프론트 기술
+    if (skills.includes('web')) score += 10
+    if (skills.includes('tailwind')) score += 10 // CSS
+  }
+
+  // --- 백엔드 (Backend) ---
+  if (title.includes('백엔드') || title.includes('backend') || title.includes('spring') || title.includes('node')) {
+    if (skills.includes('backend')) score += 20
+    if (skills.includes('java')) score += 25
+    if (skills.includes('spring')) score += 30 // Spring 공고에 Spring
+    if (skills.includes('node')) score += 25 // Node.js 공고에 Node.js
+    if (skills.includes('python') && skills.includes('flask')) score += 20 // Python 백엔드
+    if (skills.includes('sql') || skills.includes('postgresql') || skills.includes('mysql')) score += 15 // DB 기술
+    if (skills.includes('docker') || skills.includes('aws')) score += 10 // 인프라
+  }
+
+  // 점수가 0 이상일 경우, -3 ~ +3점의 랜덤값 추가
+  if (score > 0) {
+    let randomFactor = Math.floor(Math.random() * 7) - 3; // -3에서 +3 사이의 정수
+    score += randomFactor;
+  }
+
+  // 최종 점수 정리
+  if (score < 0) score = 0;
+  return Math.min(score, 100) // 0~100점 사이로 보정
 }
+// --- ⬆️ (수정된 핵심 로직) ⬆️ ---
 
 /**
  * 6. 특정 공고에 대한 추천 인재 찾기
@@ -212,19 +248,19 @@ function findMatches(job) {
       <table class="w-full text-left border-collapse">
         <thead>
           <tr class="bg-govblue text-white">
+            <th class="p-3">Job ID</th> 
             <th class="p-3">공고명</th>
-            <th class="p-3">기업명 (ID)</th>
+            <th class="p-3">기업명 (소유주)</th>
             <th class="p-3">근무지</th>
-            <th class="p-3">기간</th>
             <th class="p-3 text-center">추천</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="job in allJobs" :key="job.id" class="border-b hover:bg-slate-50">
+            <td class="p-3 text-sm text-slate-500">{{ job.id }}</td>
             <td class="p-3 font-semibold">{{ job.title }}</td>
             <td class="p-3">{{ job.companyOwner }}</td>
             <td class="p-3">{{ job.location }}</td>
-            <td class="p-3">{{ job.period }}</td>
             <td class="p-3 text-center">
               <button 
                 @click="findMatches(job)"
@@ -251,7 +287,7 @@ function findMatches(job) {
             </tr>
           </thead>
           <tbody>
-            <tr vIif="!matchedApplicants.length">
+            <tr v-if="!matchedApplicants.length">
               <td colspan="5" class="p-4 text-center text-slate-500">추천할 인재가 없습니다.</td>
             </tr>
             <tr v-for="app in matchedApplicants" :key="app.id" class="border-b hover:bg-slate-50">
@@ -282,7 +318,7 @@ function findMatches(job) {
           <tr v-for="app in allApplicants" :key="app.id" class="border-b hover:bg-slate-50">
             <td class="p-3 font-semibold">{{ app.info.name }} ({{ app.id }})</td>
             <td class="p-3">{{ app.info.email }}</td>
-            <td class="p-3">{{ app.info.phone }}</td>
+            <td classD="p-3">{{ app.info.phone }}</td>
             <td class="p-3 text-sm">{{ app.resume.skills }}</td>
             <td class="p-3 text-sm">{{ app.resume.experience.split('\n')[0] }}</td>
           </tr>
