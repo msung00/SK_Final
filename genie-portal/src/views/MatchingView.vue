@@ -1,12 +1,13 @@
 <script setup>
-// 3개 -> 5개로 확장
+// 3개 -> 7개로 확장
 const results = [
-  { company: '지니전자', title: '프론트엔드 개발자', location: '서울특별시 중구', match: 92 },
+  { company: 'AI보안연구소', title: 'AI 엔지니어', location: '대전광역시 유성구', match: 95 },
+  { company: '네오테크', title: 'React 웹 프론트엔드 개발자', location: '서울특별시 강남구', match: 92 },
+  { company: '국가정보보호원', title: '정보 보안 담당자 (경력)', location: '서울특별시', match: 90 },
   { company: '공공데이터센터', title: '데이터 분석 연구원', location: '세종특별자치시', match: 87 },
-  { company: 'AI보안연구소', title: 'AI 엔지니어', location: '대전광역시 유성구', match: 84 },
-  // --- (신규 추가) ---
-  { company: '스마트모빌리티', title: '자율주행 SW 개발', location: '경기도 성남시', match: 81 },
-  { company: 'K-Job 클라우드팀', title: '클라우드 아키텍트', location: '부산광역시', match: 79 },
+  { company: '하이비전소프트', title: 'Spring 백엔드 개발자', location: '경기도 성남시', match: 84 },
+  { company: '퓨처데이터랩', title: '컴퓨터 비전(CV) 연구원', location: '대전광역시', match: 81 },
+  { company: 'K-Job 클라우드팀', title: 'Node.js 풀스택 개발자', location: '부산광역시', match: 79 },
 ]
 </script>
 

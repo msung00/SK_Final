@@ -1,24 +1,20 @@
 <script setup>
 import { ref, computed } from 'vue'
 
-// 지원자 더미데이터 (9명 -> 15명으로 확장)
+// 지원자 더미데이터 (12명으로 확장)
 const applicants = ref([
-  { id: 1, name: '이준호', job: 'AI 개발자', company: 'K-Job 데이터랩', date: '2025-11-03', status: '서류심사 중', email: 'junho@kjob.or.kr' },
-  { id: 2, name: '김지민', job: '정보보안 담당자', company: 'K-Job 보안센터', date: '2025-11-04', status: '면접 예정', email: 'jimin@kjob.or.kr' },
-  { id: 3, name: '박수현', job: '데이터 엔지니어', company: 'K-Job AI팀', date: '2025-11-05', status: '합격', email: 'suhyun@kjob.or.kr' },
-  { id: 4, name: '최영호', job: '웹 프론트엔드 개발자', company: 'K-Job 플랫폼본부', date: '2025-11-06', status: '불합격', email: 'youngho@kjob.or.kr' },
-  { id: 5, name: '정가영', job: '백엔드 개발자', company: 'K-Job 클라우드팀', date: '2025-11-07', status: '서류심사 중', email: 'gayoung@kjob.or.kr' },
-  { id: 6, name: '윤태현', job: '클라우드 엔지니어', company: 'K-Job 클라우드팀', date: '2025-11-08', status: '서류심사 중', email: 'taehyun@kjob.or.kr' },
-  { id: 7, name: '이서윤', job: 'AI 데이터 분석가', company: 'K-Job 데이터랩', date: '2025-11-09', status: '면접 예정', email: 'seoyoon@kjob.or.kr' },
-  { id: 8, name: '한지호', job: '보안 정책 담당', company: 'K-Job 보안센터', date: '2025-11-10', status: '합격', email: 'jiho@kjob.or.kr' },
-  { id: 9, name: '김유진', job: 'AI 연구원', company: 'K-Job AI팀', date: '2025-11-10', status: '불합격', email: 'yujin@kjob.or.kr' },
-  // --- (신규 추가) ---
-  { id: 10, name: '문채원', job: '웹 프론트엔드 개발자', company: 'K-Job 플랫폼본부', date: '2025-11-11', status: '서류심사 중', email: 'chaewon@kjob.or.kr' },
-  { id: 11, name: '강민혁', job: '데이터 엔지니어', company: 'K-Job AI팀', date: '2025-11-11', status: '면접 예정', email: 'minhyuk@kjob.or.kr' },
-  { id: 12, name: '송하윤', job: 'AI 개발자', company: 'K-Job 데이터랩', date: '2025-11-12', status: '서류심사 중', email: 'hayoon@kjob.or.kr' },
-  { id: 13, name: '임도현', job: '정보보안 담당자', company: 'K-Job 보안센터', date: '2025-11-12', status: '불합격', email: 'dohyun@kjob.or.kr' },
-  { id: 14, name: '조은우', job: '백엔드 개발자', company: 'K-Job 클라우드팀', date: '2025-11-13', status: '합격', email: 'eunwoo@kjob.or.kr' },
-  { id: 15, name: '신예은', job: 'AI 연구원', company: 'K-Job AI팀', date: '2025-11-13', status: '서류심사 중', email: 'yeeun@kjob.or.kr' },
+  { id: 1, name: '이준호', job: '정보보안 담당자', company: 'K-Job 보안센터', date: '2025-11-03', status: '서류심사 중', email: 'junho@kjob.or.kr' },
+  { id: 2, name: '김민수', job: '백엔드 개발자', company: 'K-Job 클라우드팀', date: '2025-11-04', status: '면접 예정', email: 'minsu@kjob.or.kr' },
+  { id: 3, name: '정가영', job: 'AI 엔지니어', company: 'K-Job AI팀', date: '2025-11-05', status: '합격', email: 'gayoung@kjob.or.kr' },
+  { id: 4, name: '박지훈', job: '웹 프론트엔드 개발자', company: 'K-Job 플랫폼본부', date: '2025-11-06', status: '불합격', email: 'jihun@kjob.or.kr' },
+  { id: 5, name: '최수민', job: '백엔드 개발자', company: 'K-Job 클라우드팀', date: '2025-11-07', status: '서류심사 중', email: 'sumin@kjob.or.kr' },
+  { id: 6, name: '윤서아', job: '데이터 분석가', company: 'K-Job 데이터랩', date: '2025-11-08', status: '서류심사 중', email: 'seoah@kjob.or.kr' },
+  { id: 7, name: '강태우', job: 'AI 연구원', company: 'K-Job AI팀', date: '2025-11-09', status: '면접 예정', email: 'taewoo@kjob.or.kr' },
+  { id: 8, name: '안효진', job: 'UX/UI 디자이너', company: 'K-Job 플랫폼본부', date: '2025-11-10', status: '합격', email: 'hyojin@kjob.or.kr' },
+  { id: 9, name: '문철수', job: '시스템 엔지니어', company: 'K-Job 인프라팀', date: '2025-11-10', status: '불합격', email: 'chulsoo@kjob.or.kr' },
+  { id: 10, name: '백예빈', job: '해외 마케터', company: 'K-Job 글로벌', date: '2025-11-11', status: '서류심사 중', email: 'yebin@kjob.or.kr' },
+  { id: 11, name: '홍길동', job: 'AI 엔지니어', company: 'K-Job AI팀', date: '2025-11-11', status: '면접 예정', email: 'gildong@kjob.or.kr' },
+  { id: 12, name: '신유나', job: '정보보안 담당자', company: 'K-Job 보안센터', date: '2025-11-12', status: '서류심사 중', email: 'yuna@kjob.or.kr' },
 ])
 
 const selectedApplicant = ref(null)

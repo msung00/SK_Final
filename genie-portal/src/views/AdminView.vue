@@ -8,7 +8,8 @@ const selectedJob = ref(null)
 const matchedApplicants = ref([])
 const activeTab = ref('jobs') // 'jobs' | 'users'
 
-// 2. 확장된 구직자 더미데이터 (7명)
+// --- ⬇️ (수정된 영역: 7명 -> 12명) ⬇️ ---
+// 2. 확장된 구직자 더미데이터 (12명)
 const dummyApplicants = [
   {
     id: 'lee_junho',
@@ -79,8 +80,60 @@ const dummyApplicants = [
       skills: 'Python, TensorFlow, CV, AI, C++',
       intro: '딥러닝과 컴퓨터 비전 기술에 강점이 있습니다.'
     }
+  },
+  // --- (신규 추가 5명) ---
+  {
+    id: 'ahn_hyojin',
+    info: { name: '안효진', email: 'hyojin@kjob.com', phone: '010-3121-4151' },
+    resume: {
+      education: 'P대학교 시각디자인학과 (졸업)',
+      experience: '디자인 에이전시 (2023~2025)\nUX/UI 디자인, 프로토타이핑',
+      skills: 'Figma, Adobe XD, UI, UX, Web',
+      intro: '사용자 중심의 직관적인 디자인을 추구합니다.'
+    }
+  },
+  {
+    id: 'moon_chulsoo',
+    info: { name: '문철수', email: 'chulsoo@kjob.com', phone: '010-1234-5678' },
+    resume: {
+      education: 'B대학교 시스템공학과 (졸업)',
+      experience: '반도체 장비 엔지니어 (2022~2025)\n장비 셋업 및 유지보수',
+      skills: 'Semiconductor, SCM, CAD, Python',
+      intro: '꼼꼼하고 책임감 있는 엔지니어입니다.'
+    }
+  },
+  {
+    id: 'baek_yebin',
+    info: { name: '백예빈', email: 'yebin@kjob.com', phone: '010-8765-4321' },
+    resume: {
+      education: 'C대학교 영어영문학과 (졸업)',
+      experience: 'IT 기업 해외 마케팅 (2024~2025)\nSNS 채널 관리 및 콘텐츠 번역',
+      skills: 'English, Marketing, SNS, SQL',
+      intro: '데이터 분석이 가능한 글로벌 마케터입니다.'
+    }
+  },
+  {
+    id: 'hong_gildong',
+    info: { name: '홍길동', email: 'gildong@kjob.com', phone: '010-0000-1111' },
+    resume: {
+      education: 'A대학교 컴퓨터공학과 (신입)',
+      experience: '졸업 프로젝트 - AI 챗봇\nNode.js와 Python(Flask)을 연동하여 개발',
+      skills: 'Node, JS, Python, AI, Backend',
+      intro: '신입이지만 열정이 넘치는 백엔드 개발자입니다.'
+    }
+  },
+  {
+    id: 'shin_yuna',
+    info: { name: '신유나', email: 'yuna@kjob.com', phone: '010-2222-3333' },
+    resume: {
+      education: 'S대학교 사이버보안학과 (재학)',
+      experience: '교내 보안 동아리\n웹 취약점 분석 및 리포팅',
+      skills: 'Web, Security, BurpSuite, Network',
+      intro: '화이트 해커를 꿈꾸는 학생입니다. 웹 보안에 자신있습니다.'
+    }
   }
 ]
+// --- ⬆️ (수정된 영역) ⬆️ ---
 
 // 3. 확장된 채용 공고 더미데이터 (7개)
 const dummyJobs = [
@@ -115,7 +168,7 @@ const dummyJobs = [
   {
     id: 1005,
     title: 'Spring 백엔드 개발자 (3년 이상)',
-    companyOwner: '하이비전소프트 (company1)',
+    companyOwner: '하이비전소프트 (company4)',
     location: '판교',
     period: '2025-11-10 ~ 12-10',
   },
@@ -141,7 +194,6 @@ onMounted(() => {
   allJobs.value = dummyJobs
 })
 
-// --- ⬇️ (수정된 핵심 로직) ⬇️ ---
 /**
  * 5. 관리자용 매칭 로직 (점수 세분화)
  */
@@ -201,7 +253,6 @@ function calculateAdminMatch(applicant, job) {
   if (score < 0) score = 0;
   return Math.min(score, 100) // 0~100점 사이로 보정
 }
-// --- ⬆️ (수정된 핵심 로직) ⬆️ ---
 
 /**
  * 6. 특정 공고에 대한 추천 인재 찾기
@@ -318,7 +369,7 @@ function findMatches(job) {
           <tr v-for="app in allApplicants" :key="app.id" class="border-b hover:bg-slate-50">
             <td class="p-3 font-semibold">{{ app.info.name }} ({{ app.id }})</td>
             <td class="p-3">{{ app.info.email }}</td>
-            <td classD="p-3">{{ app.info.phone }}</td>
+            <td class="p-3">{{ app.info.phone }}</td>
             <td class="p-3 text-sm">{{ app.resume.skills }}</td>
             <td class="p-3 text-sm">{{ app.resume.experience.split('\n')[0] }}</td>
           </tr>

@@ -1,13 +1,13 @@
 <script setup>
-// 3개 -> 6개로 확장
+// 3개 -> 7개로 확장
 const jobList = [
-  { id: 1, title: '공공기관 보안 담당자', company: '국가정보보호원', location: '서울', date: '2025-11-10 ~ 2025-11-30' },
-  { id: 2, title: '데이터 엔지니어', company: 'K-Job 데이터센터', location: '부산', date: '2025-10-25 ~ 2025-11-15' },
-  { id: 3, title: 'AI 모델 연구원', company: '스마트AI랩', location: '대전', date: '2025-11-01 ~ 2025-11-25' },
-  // --- (신규 추가) ---
-  { id: 4, title: 'Vue.js 프론트엔드 개발자', company: '지니전자', location: '서울', date: '2025-11-05 ~ 2025-12-01' },
-  { id: 5, title: '클라우드 운영(SRE)', company: '하이비전소프트', location: '판교', date: '2025-11-08 ~ 2025-11-28' },
-  { id: 6, title: 'Java/Spring 백엔드 개발', company: '디지털브릿지', location: '부산', date: '2025-11-10 ~ 2025-12-10' },
+  { id: 1003, title: '정보 보안 담당자 (경력)', company: '국가정보보호원', location: '서울', date: '2025-11-02 ~ 11-29' },
+  { id: 1002, title: '데이터 분석가 (신입)', company: 'K-Job 데이터센터', location: '부산', date: '2025-11-03 ~ 11-25' },
+  { id: 1001, title: 'AI 엔지니어', company: '스마트AI랩', location: '대전', date: '2025-11-01 ~ 11-30' },
+  { id: 1004, title: 'React 웹 프론트엔드 개발자', company: '네오테크', location: '서울 (강남)', date: '2025-11-05 ~ 12-05' },
+  { id: 1005, title: 'Spring 백엔드 개발자 (3년 이상)', company: '하이비전소프트', location: '판교', date: '2025-11-10 ~ 12-10' },
+  { id: 1006, title: '컴퓨터 비전(CV) 연구원 (석사 이상)', company: '퓨처데이터랩', location: '대전', date: '2025-11-01 ~ 11-30' },
+  { id: 1007, title: 'Node.js 풀스택 개발자', company: '네오테크', location: '부산 (해운대)', date: '2025-11-07 ~ 11-20' },
 ]
 
 function apply(job) {
