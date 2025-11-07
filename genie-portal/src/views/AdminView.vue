@@ -8,7 +8,6 @@ const selectedJob = ref(null)
 const matchedApplicants = ref([])
 const activeTab = ref('jobs') // 'jobs' | 'users'
 
-// --- ⬇️ (수정된 영역: 7명 -> 12명) ⬇️ ---
 // 2. 확장된 구직자 더미데이터 (12명)
 const dummyApplicants = [
   {
@@ -81,7 +80,6 @@ const dummyApplicants = [
       intro: '딥러닝과 컴퓨터 비전 기술에 강점이 있습니다.'
     }
   },
-  // --- (신규 추가 5명) ---
   {
     id: 'ahn_hyojin',
     info: { name: '안효진', email: 'hyojin@kjob.com', phone: '010-3121-4151' },
@@ -133,7 +131,6 @@ const dummyApplicants = [
     }
   }
 ]
-// --- ⬆️ (수정된 영역) ⬆️ ---
 
 // 3. 확장된 채용 공고 더미데이터 (7개)
 const dummyJobs = [
@@ -210,37 +207,37 @@ function calculateAdminMatch(applicant, job) {
     if (skills.includes('python')) score += 20
     if (skills.includes('data') || skills.includes('데이터')) score += 15
     if (skills.includes('pandas')) score += 10
-    if (skills.includes('sql')) score += 5 // 데이터 직무에 SQL은 약간의 가점
-    if (skills.includes('pytorch') || skills.includes('tensorflow')) score += 25 // 핵심 기술
-    if (title.includes('cv') && skills.includes('cv')) score += 30 // CV 공고에 CV 스킬 (높은 가중치)
+    if (skills.includes('sql')) score += 5 
+    if (skills.includes('pytorch') || skills.includes('tensorflow')) score += 25 
+    if (title.includes('cv') && skills.includes('cv')) score += 30 
   }
   
   // --- 보안 (Security) ---
   if (title.includes('보안') || title.includes('security')) {
-    if (skills.includes('보안') || skills.includes('security')) score += 40 // 직접 키워드
+    if (skills.includes('보안') || skills.includes('security')) score += 40 
     if (skills.includes('network')) score += 15
     if (skills.includes('ids') || skills.includes('ips')) score += 20
-    if (skills.includes('burpsuite') || skills.includes('kali')) score += 20 // 실무 툴
+    if (skills.includes('burpsuite') || skills.includes('kali')) score += 20 
   }
 
   // --- 웹 프론트엔드 (Web Frontend) ---
   if (title.includes('프론트') || title.includes('web') || title.includes('react')) {
     if (skills.includes('js') || skills.includes('javascript')) score += 20
-    if (skills.includes('react')) score += 30 // React 공고에 React
-    if (skills.includes('vue')) score += 25 // Vue도 프론트 기술
+    if (skills.includes('react')) score += 30 
+    if (skills.includes('vue')) score += 25 
     if (skills.includes('web')) score += 10
-    if (skills.includes('tailwind')) score += 10 // CSS
+    if (skills.includes('tailwind')) score += 10 
   }
 
   // --- 백엔드 (Backend) ---
   if (title.includes('백엔드') || title.includes('backend') || title.includes('spring') || title.includes('node')) {
     if (skills.includes('backend')) score += 20
     if (skills.includes('java')) score += 25
-    if (skills.includes('spring')) score += 30 // Spring 공고에 Spring
-    if (skills.includes('node')) score += 25 // Node.js 공고에 Node.js
-    if (skills.includes('python') && skills.includes('flask')) score += 20 // Python 백엔드
-    if (skills.includes('sql') || skills.includes('postgresql') || skills.includes('mysql')) score += 15 // DB 기술
-    if (skills.includes('docker') || skills.includes('aws')) score += 10 // 인프라
+    if (skills.includes('spring')) score += 30 
+    if (skills.includes('node')) score += 25 
+    if (skills.includes('python') && skills.includes('flask')) score += 20 
+    if (skills.includes('sql') || skills.includes('postgresql') || skills.includes('mysql')) score += 15 
+    if (skills.includes('docker') || skills.includes('aws')) score += 10 
   }
 
   // 점수가 0 이상일 경우, -3 ~ +3점의 랜덤값 추가
@@ -273,12 +270,22 @@ function findMatches(job) {
     .sort((a, b) => b.matchScore - a.matchScore)
 }
 
+/**
+ * 7. 매칭 버튼 클릭 시 실행될 함수
+ */
+function performMatch(applicant, job) {
+  const applicantName = applicant.info.name || applicant.id;
+  const jobTitle = job.title;
+  
+  alert(` ${applicantName} 님을 "${jobTitle}" 공고에 매칭 추천하였습니다.`);
+}
+
 </script>
 
 <template>
   <div class="bg-white rounded-xl shadow p-8 max-w-7xl mx-auto">
     <h1 class="text-3xl font-bold text-govblue mb-8">
-      👑 관리자 대시보드
+       관리자 대시보드
     </h1>
 
     <div class="flex gap-6 border-b border-slate-200 mb-8 justify-center">
@@ -295,7 +302,7 @@ function findMatches(job) {
     </div>
 
     <div v-if="activeTab === 'jobs'">
-      <h2 class="text-2xl font-bold text-govblue mb-6">📋 전체 채용 공고</h2>
+      <h2 class="text-2xl font-bold text-govblue mb-6"> 전체 채용 공고</h2>
       <table class="w-full text-left border-collapse">
         <thead>
           <tr class="bg-govblue text-white">
@@ -325,7 +332,7 @@ function findMatches(job) {
 
       <div v-if="selectedJob" class="mt-10 border-t pt-6">
         <h3 class="text-xl font-bold text-blue-700 mb-4">
-          🎯 "{{ selectedJob.title }}" 공고 추천 인재
+           "{{ selectedJob.title }}" 공고 추천 인재
         </h3>
         <table class="w-full text-left border-collapse">
           <thead>
@@ -335,18 +342,27 @@ function findMatches(job) {
               <th class="p-3">이메일</th>
               <th class="p-3">보유 기술</th>
               <th class="p-3">경력 요약</th>
+              <th class="p-3 text-center">매칭</th>
             </tr>
           </thead>
           <tbody>
             <tr v-if="!matchedApplicants.length">
-              <td colspan="5" class="p-4 text-center text-slate-500">추천할 인재가 없습니다.</td>
+              <td colspan="6" class="p-4 text-center text-slate-500">추천할 인재가 없습니다.</td>
             </tr>
             <tr v-for="app in matchedApplicants" :key="app.id" class="border-b hover:bg-slate-50">
               <td class="p-3 font-bold text-blue-600">{{ app.matchScore }}%</td>
               <td class="p-3 font-semibold">{{ app.info.name || app.id }} ({{ app.id }})</td>
               <td class="p-3">{{ app.info.email }}</td>
               <td class="p-3 text-sm">{{ app.resume.skills }}</td>
-              <td class="p-3 text-sm">{{ app.resume.experience.split('\n')[0] }}</td>
+              <td classm="p-3 text-sm">{{ app.resume.experience.split('\n')[0] }}</td>
+              <td class="p-3 text-center">
+                <button
+                  @click="performMatch(app, selectedJob)"
+                  class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 whitespace-nowrap"
+                >
+                  매칭하기
+                </button>
+                </td>
             </tr>
           </tbody>
         </table>
@@ -354,7 +370,7 @@ function findMatches(job) {
     </div>
 
     <div v-if="activeTab === 'users'">
-      <h2 class="text-2xl font-bold text-govblue mb-6">👤 전체 구직자 목록</h2>
+      <h2 class="text-2xl font-bold text-govblue mb-6"> 전체 구직자 목록</h2>
       <table class="w-full text-left border-collapse">
         <thead>
           <tr class="bg-govblue text-white">
@@ -370,7 +386,7 @@ function findMatches(job) {
             <td class="p-3 font-semibold">{{ app.info.name }} ({{ app.id }})</td>
             <td class="p-3">{{ app.info.email }}</td>
             <td class="p-3">{{ app.info.phone }}</td>
-            <td class="p-3 text-sm">{{ app.resume.skills }}</td>
+            <td classF="p-3 text-sm">{{ app.resume.skills }}</td>
             <td class="p-3 text-sm">{{ app.resume.experience.split('\n')[0] }}</td>
           </tr>
         </tbody>
