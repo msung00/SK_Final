@@ -13,16 +13,14 @@ import PolicyView from '@/views/PolicyView.vue'
 import MapView from '@/views/MapView.vue'
 import CSView from '@/views/CSView.vue'
 import RecruitView from '@/views/RecruitView.vue'
-import RegisterView from '@/views/RegisterView.vue'
+import RegisterView from '@/views/RegisterView.vue' // (이 경로는 '/register'가 아닌 다른 경로에서 사용되어야 함)
 import MatchingView from '@/views/MatchingView.vue'
 import JobsView from '@/views/JobsView.vue'
 import LoginView from '@/views/LoginView.vue'
 import RegistersView from '@/views/RegistersView.vue'
 import MyPage from '@/views/MyPage.vue'
 import RecruitManageView from '@/views/RecruitManageView.vue'
-
-// 1. 관리자 페이지 import
-import AdminView from '@/views/AdminView.vue'
+import AdminView from '@/views/AdminView.vue' // 1. 관리자 페이지 import
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -41,12 +39,21 @@ const router = createRouter({
     { path: '/cs', name: 'cs', component: CSView },
 
     { path: '/recruit', name: 'recruit', component: RecruitView },
-    { path: '/register', name: 'register', component: RegisterView },
+    
+    // --- ⬇️ (수정된 부분) ⬇️ ---
+    // RegisterView(구직자 등록)는 /recruit 등 다른 페이지에서 연결되어야 합니다.
+    // 여기서는 '/register-jobseeker'와 같이 고유 경로를 주거나,
+    // 만약 '/register'가 회원가입 전용이라면 이 항목을 삭제합니다.
+    // 여기서는 예시로 'RegisterView'의 경로를 변경합니다.
+    { path: '/register-jobseeker', name: 'register-jobseeker', component: RegisterView }, 
+    // --- ⬆️ (수정된 부분) ⬆️ ---
+
     { path: '/matching', name: 'matching', component: MatchingView },
     { path: '/jobs', name: 'jobs', component: JobsView },
 
     { path: '/login', name: 'login', component: LoginView },
-    // RegistersView를 메인 회원가입 페이지로 사용
+    
+    // ✅ "회원가입" 버튼이 연결될 메인 /register 경로
     { path: '/register', name: 'registers', component: RegistersView }, 
     
     { path: '/mypage', name: 'mypage', component: MyPage },
